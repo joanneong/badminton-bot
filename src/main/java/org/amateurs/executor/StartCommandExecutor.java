@@ -22,17 +22,29 @@ public class StartCommandExecutor {
     private final ChatClient chatClient;
 
     public StartCommandExecutor() {
-        var list_button = InlineKeyboardButton.builder()
+        var listButton = InlineKeyboardButton.builder()
                 .text("List all games").callbackData(LIST_COMMAND.getCommand())
+                .build();
+
+        var addButton = InlineKeyboardButton.builder()
                 .text("Add a game").callbackData(ADD_COMMAND.getCommand())
+                .build();
+
+        var editButton = InlineKeyboardButton.builder()
                 .text("Edit a game").callbackData(EDIT_COMMAND.getCommand())
+                .build();
+
+        var deleteButton = InlineKeyboardButton.builder()
                 .text("Delete a game").callbackData(DELETE_COMMAND.getCommand())
                 .build();
 
         this.chatClient = ChatClient.getInstance();
 
         this.startMenu = InlineKeyboardMarkup.builder()
-                .keyboardRow(new InlineKeyboardRow(list_button))
+                .keyboardRow(new InlineKeyboardRow(listButton))
+                .keyboardRow(new InlineKeyboardRow(addButton))
+                .keyboardRow(new InlineKeyboardRow(editButton))
+                .keyboardRow(new InlineKeyboardRow(deleteButton))
                 .build();
     }
 
