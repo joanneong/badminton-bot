@@ -9,7 +9,10 @@ import static java.util.stream.Collectors.toMap;
 
 public enum Command {
     START_COMMAND ("/start"),
-    LIST_COMMAND ("/list");
+    LIST_COMMAND ("/list"),
+    ADD_COMMAND ("/add"),
+    EDIT_COMMAND ("/edit"),
+    DELETE_COMMAND ("/delete");
 
     private final String command;
 

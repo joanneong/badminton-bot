@@ -5,7 +5,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
-import static org.amateurs.Command.LIST_COMMAND;
+import static org.amateurs.Command.*;
 
 public class StartCommandExecutor {
     private static final String BADMINTON_EMOJI = new String(Character.toChars(
@@ -24,6 +24,9 @@ public class StartCommandExecutor {
     public StartCommandExecutor() {
         var list_button = InlineKeyboardButton.builder()
                 .text("List all games").callbackData(LIST_COMMAND.getCommand())
+                .text("Add a game").callbackData(ADD_COMMAND.getCommand())
+                .text("Edit a game").callbackData(EDIT_COMMAND.getCommand())
+                .text("Delete a game").callbackData(DELETE_COMMAND.getCommand())
                 .build();
 
         this.chatClient = ChatClient.getInstance();
