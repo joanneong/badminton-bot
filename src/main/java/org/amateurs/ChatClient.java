@@ -24,7 +24,7 @@ public class ChatClient {
         return chatClient;
     }
 
-    private void sendText(Long chatId, String msg) {
+    public void sendText(Long chatId, String msg) {
         final SendMessage sendMessage = SendMessage.builder()
                 .chatId(chatId)
                 .text(msg)

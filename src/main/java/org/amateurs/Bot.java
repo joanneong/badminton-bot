@@ -1,5 +1,6 @@
 package org.amateurs;
 
+import org.amateurs.executor.ListCommandExecutor;
 import org.amateurs.executor.StartCommandExecutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,10 +11,13 @@ import org.telegram.telegrambots.meta.api.objects.message.Message;
 public class Bot implements LongPollingSingleThreadUpdateConsumer {
     private static final Logger LOG = LogManager.getLogger();
 
-    private StartCommandExecutor startCommandExecutor;
+    private final StartCommandExecutor startCommandExecutor;
+
+    private final ListCommandExecutor listCommandExecutor;
 
     public Bot() {
         this.startCommandExecutor = new StartCommandExecutor();
+        this.listCommandExecutor = new ListCommandExecutor();
     }
 
     @Override
@@ -25,6 +29,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
 
             switch (Command.get(msg.getText())) {
                 case START_COMMAND -> startCommandExecutor.executeStartCommand(chatId);
+                case LIST_COMMAND -> listCommandExecutor.executeListCommand(chatId);
             }
         } else if (update.hasCallbackQuery()) {
             final Long chatId = update.getCallbackQuery().getMessage().getChatId();

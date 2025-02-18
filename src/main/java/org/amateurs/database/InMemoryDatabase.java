@@ -3,6 +3,7 @@ package org.amateurs.database;
 import org.amateurs.model.Game;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,7 +13,9 @@ public class InMemoryDatabase implements Database {
 
     @Override
     public List<Game> getAllGames(Long chatId) {
-        return sortedGamesForChatId.get(chatId);
+        final List<Game> games = sortedGamesForChatId.get(chatId);
+        Collections.sort(games);
+        return games;
     }
 
     @Override

@@ -5,13 +5,16 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
-import static org.amateurs.Command.*;
+import static org.amateurs.Command.ADD_COMMAND;
+import static org.amateurs.Command.DELETE_COMMAND;
+import static org.amateurs.Command.EDIT_COMMAND;
+import static org.amateurs.Command.LIST_COMMAND;
 
 public class StartCommandExecutor {
     private static final String BADMINTON_EMOJI = new String(Character.toChars(
             Integer.parseInt("1F3F8", 16)));
 
-    private static final String helpTemplate = """
+    private static final String HELP_TEMPLATE = """
                 Welcome to BadmintonBot! %s
                 
                 What do you want to do today?
@@ -49,7 +52,7 @@ public class StartCommandExecutor {
     }
 
     public void executeStartCommand(Long chatId) {
-        final String helpMessage = String.format(helpTemplate, BADMINTON_EMOJI);
+        final String helpMessage = String.format(HELP_TEMPLATE, BADMINTON_EMOJI);
         chatClient.sendMenu(chatId, helpMessage, startMenu);
     }
 }
