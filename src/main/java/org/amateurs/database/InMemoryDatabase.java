@@ -2,6 +2,7 @@ package org.amateurs.database;
 
 import org.amateurs.model.Game;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -9,11 +10,15 @@ import java.util.List;
 import java.util.Map;
 
 public class InMemoryDatabase implements Database {
-    final Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
+    final static Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
+
+    static {
+        populateWithDummyData();
+    }
 
     @Override
     public List<Game> getAllGames(Long chatId) {
-        final List<Game> games = sortedGamesForChatId.get(chatId);
+        List<Game> games = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
         Collections.sort(games);
         return games;
     }
@@ -56,5 +61,20 @@ public class InMemoryDatabase implements Database {
 
         savedGames.remove(index - 1);
         return savedGames;
+    }
+
+    private static void populateWithDummyData() {
+        final ZonedDateTime now = ZonedDateTime.now();
+        final List<Game> dummyGames = new ArrayList<>();
+        final Game dummyGame = Game.builder()
+                .date(now.plusDays(3))
+                .startTime(now.plusDays(3).plusHours(1))
+                .endTime(now.plusDays(3).plusHours(3))
+                .location("CCK Sports Hall")
+                .courts(List.of("1"))
+                .players(List.of("Jojopup123"))
+                .build();
+        dummyGames.add(dummyGame);
+        sortedGamesForChatId.put(197040891L, dummyGames);
     }
 }

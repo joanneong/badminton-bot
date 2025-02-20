@@ -1,20 +1,28 @@
 package org.amateurs.model;
 
+import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Data
+@Builder
 public class Game implements Comparable<Game> {
-    private final static String DISPLAY_TEMPLATE = """
-            Date: %s
-            Game time: %s to %s
-            Location: %s
-            Court(s): %s
-            Players(s): %s
+    private static final String DISPLAY_TEMPLATE = """
+            <u><b>Game %d</b></u>
+            <b>Date:</b> %s
+            <b>Time:</b> %s to %s
+            <b>Location:</b> %s
+            <b>Court(s):</b> %s
+            <b>Players(s):</b> %s
             """;
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)");
+
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma");
 
     ZonedDateTime date;
 
@@ -38,8 +46,18 @@ public class Game implements Comparable<Game> {
     /**
      * Get the game details in a formatted string
      */
-    public String toDisplayString() {
-        return String.format(DISPLAY_TEMPLATE, date.toString(), startTime.toString(), endTime.toString(),
-                location, courts, players);
+    public String toDisplayString(int idx) {
+        return String.format(DISPLAY_TEMPLATE,
+                idx,
+                DATE_FORMATTER.format(date),
+                TIME_FORMATTER.format(startTime).toUpperCase(),
+                TIME_FORMATTER.format(endTime).toUpperCase(),
+                location,
+                getFormattedList(courts),
+                getFormattedList(players));
+    }
+
+    private String getFormattedList(List<String> toFormat) {
+        return String.join(", ", toFormat);
     }
 }

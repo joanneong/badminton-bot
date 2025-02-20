@@ -33,11 +33,16 @@ public class ListCommandExecutor {
         }
 
         final StringBuilder allGameDetails = new StringBuilder(LIST_TEMPLATE);
-        allGames.forEach(game -> {
+        for (int i = 0; i < allGames.size(); i++) {
             allGameDetails.append("\n");
-            allGameDetails.append(game.toDisplayString());
-        });
+            allGameDetails.append(allGames.get(i).toDisplayString(i + 1));
+        }
 
         chatClient.sendText(chatId, allGameDetails.toString());
+    }
+
+    public void executeListCommand(Long chatId, String queryId) {
+        chatClient.closeCallbackQuery(queryId);
+        executeListCommand(chatId);
     }
 }

@@ -35,8 +35,10 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
             final Long chatId = update.getCallbackQuery().getMessage().getChatId();
             final String queryId = update.getCallbackQuery().getId();
             final String callbackData = update.getCallbackQuery().getData();
-            final Integer msgId = update.getCallbackQuery().getMessage().getMessageId();
-//            buttonTap(chatId, queryId, callbackData, msgId);
+
+            switch (Command.get(callbackData)) {
+                case LIST_COMMAND -> listCommandExecutor.executeListCommand(chatId, queryId);
+            }
         }
     }
 }
