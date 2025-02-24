@@ -1,5 +1,6 @@
 package org.amateurs;
 
+import org.amateurs.executor.AddCommandExecutor;
 import org.amateurs.executor.ListCommandExecutor;
 import org.amateurs.executor.StartCommandExecutor;
 import org.apache.logging.log4j.LogManager;
@@ -15,9 +16,12 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
 
     private final ListCommandExecutor listCommandExecutor;
 
+    private final AddCommandExecutor addCommandExecutor;
+
     public Bot() {
         this.startCommandExecutor = new StartCommandExecutor();
         this.listCommandExecutor = new ListCommandExecutor();
+        this.addCommandExecutor = new AddCommandExecutor();
     }
 
     @Override
@@ -30,6 +34,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
             switch (Command.get(msg.getText())) {
                 case START_COMMAND -> startCommandExecutor.executeStartCommand(chatId);
                 case LIST_COMMAND -> listCommandExecutor.executeListCommand(chatId);
+                case ADD_COMMAND -> addCommandExecutor.executeAddCommand(chatId);
             }
         } else if (update.hasCallbackQuery()) {
             final Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -38,6 +43,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
 
             switch (Command.get(callbackData)) {
                 case LIST_COMMAND -> listCommandExecutor.executeListCommand(chatId, queryId);
+                case ADD_COMMAND -> addCommandExecutor.executeAddCommand(chatId, queryId);
             }
         }
     }
