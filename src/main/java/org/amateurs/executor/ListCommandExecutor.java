@@ -7,7 +7,7 @@ import org.amateurs.model.Game;
 
 import java.util.List;
 
-public class ListCommandExecutor {
+public class ListCommandExecutor implements CommandExecutor {
     private static final String LIST_TEMPLATE = """
             Here are all your upcoming games:
             """;
@@ -25,7 +25,8 @@ public class ListCommandExecutor {
         this.chatClient = ChatClient.getInstance();
     }
 
-    public void executeListCommand(Long chatId) {
+    @Override
+    public void executeCommand(Long chatId) {
         final List<Game> allGames = database.getAllGames(chatId);
         if (allGames.isEmpty()) {
             chatClient.sendText(chatId, NO_GAME_TEMPLATE);
@@ -41,8 +42,9 @@ public class ListCommandExecutor {
         chatClient.sendText(chatId, allGameDetails.toString());
     }
 
-    public void executeListCommand(Long chatId, String queryId) {
+    @Override
+    public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
         chatClient.closeCallbackQuery(queryId);
-        executeListCommand(chatId);
+        executeCommand(chatId);
     }
 }

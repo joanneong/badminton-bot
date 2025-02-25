@@ -1,5 +1,6 @@
 package org.amateurs;
 
+import lombok.Getter;
 import org.apache.commons.lang3.stream.Streams;
 
 import java.util.Map;
@@ -7,6 +8,7 @@ import java.util.Map;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 
+@Getter
 public enum Command {
     START_COMMAND ("/start"),
     LIST_COMMAND ("/list"),
@@ -18,12 +20,10 @@ public enum Command {
 
     private static final Map<String, Command> COMMAND_MAP;
 
+    public static final String COMMAND_DELIMITER = "::";
+
     Command(String command) {
         this.command = command;
-    }
-
-    public String getCommand() {
-        return command;
     }
 
     static {

@@ -13,7 +13,7 @@ import java.util.List;
 
 import static org.amateurs.Command.ADD_COMMAND;
 
-public class AddCommandExecutor {
+public class AddCommandExecutor implements CommandExecutor {
     private static final String ADD_TEMPLATE = """
             Please provide your game details :)
             
@@ -28,13 +28,15 @@ public class AddCommandExecutor {
         this.chatClient = ChatClient.getInstance();
     }
 
-    public void executeAddCommand(Long chatId) {
+    @Override
+    public void executeCommand(Long chatId) {
         chatClient.sendMenu(chatId, ADD_TEMPLATE, buildDateOptionsKeyboard());
     }
 
-    public void executeAddCommand(Long chatId, String queryId) {
+    @Override
+    public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
         chatClient.closeCallbackQuery(queryId);
-        executeAddCommand(chatId);
+        executeCommand(chatId);
     }
 
     private InlineKeyboardMarkup buildDateOptionsKeyboard() {

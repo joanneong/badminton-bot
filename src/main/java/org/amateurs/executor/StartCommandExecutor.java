@@ -10,7 +10,7 @@ import static org.amateurs.Command.DELETE_COMMAND;
 import static org.amateurs.Command.EDIT_COMMAND;
 import static org.amateurs.Command.LIST_COMMAND;
 
-public class StartCommandExecutor {
+public class StartCommandExecutor implements CommandExecutor {
     private static final String BADMINTON_EMOJI = new String(Character.toChars(
             Integer.parseInt("1F3F8", 16)));
 
@@ -51,8 +51,14 @@ public class StartCommandExecutor {
                 .build();
     }
 
-    public void executeStartCommand(Long chatId) {
+    @Override
+    public void executeCommand(Long chatId) {
         final String helpMessage = String.format(HELP_TEMPLATE, BADMINTON_EMOJI);
         chatClient.sendMenu(chatId, helpMessage, startMenu);
+    }
+
+    @Override
+    public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
+        throw new UnsupportedOperationException("start command does not have a use case for callback query");
     }
 }
