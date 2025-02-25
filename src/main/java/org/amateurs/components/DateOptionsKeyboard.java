@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DateOptionsKeyboardBuilder {
+public class DateOptionsKeyboard {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)");
 
     public static InlineKeyboardMarkup buildDateOptionsKeyboard(int numDays, int buttonsPerRow, String callbackPrefix) {

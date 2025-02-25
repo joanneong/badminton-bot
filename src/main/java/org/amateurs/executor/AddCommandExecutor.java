@@ -4,7 +4,7 @@ import org.amateurs.ChatClient;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import static org.amateurs.Command.ADD_COMMAND;
-import static org.amateurs.components.DateOptionsKeyboardBuilder.buildDateOptionsKeyboard;
+import static org.amateurs.components.DateOptionsKeyboard.buildDateOptionsKeyboard;
 
 public class AddCommandExecutor implements CommandExecutor {
     private static final String ADD_TEMPLATE = """
