@@ -1,11 +1,19 @@
 package org.amateurs.executor;
 
 import org.amateurs.ChatClient;
+import org.amateurs.model.AddCommandField;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import static org.amateurs.Command.ADD_COMMAND;
-import static org.amateurs.components.DateOptionsKeyboard.buildDateOptionsKeyboard;
+import static org.amateurs.Command.COMMAND_DELIMITER;
+import static org.amateurs.components.DateOptionsKeyboardBuilder.buildDateOptionsKeyboard;
+import static org.amateurs.util.AddCommandFieldProcessor.getKeyboardForField;
+import static org.amateurs.util.AddCommandFieldProcessor.getTextForField;
 
+/**
+ * Adds a game by constructing a Game string with this format:
+ * /add::{date}::{time period}::{start hour}::{start minute}::{duration}::{location}::{courts}
+ */
 public class AddCommandExecutor implements CommandExecutor {
     private static final String ADD_TEMPLATE = """
             Please provide your game details :)
@@ -28,6 +36,11 @@ public class AddCommandExecutor implements CommandExecutor {
     @Override
     public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
         chatClient.closeCallbackQuery(queryId);
-        executeCommand(chatId);
+
+        int currentStep = callbackData.split(COMMAND_DELIMITER).length;
+        final AddCommandField currentField = AddCommandField.getFieldByStep(currentStep);
+        final String fieldText = getTextForField(currentField, callbackData);
+        final InlineKeyboardMarkup fieldKeyboard = getKeyboardForField(currentField);
+        chatClient.editMessageWithMenu(chatId, msgId, fieldText, fieldKeyboard);
     }
 }

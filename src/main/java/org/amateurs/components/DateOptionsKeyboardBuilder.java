@@ -3,7 +3,6 @@ package org.amateurs.components;
 import org.amateurs.Command;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -11,32 +10,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DateOptionsKeyboard {
+public class DateOptionsKeyboardBuilder {
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)");
 
     public static InlineKeyboardMarkup buildDateOptionsKeyboard(int numDays, int buttonsPerRow, String callbackPrefix) {
         final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur"));
-
-        int numRows = Math.ceilDiv(numDays, buttonsPerRow);
-
-        final List<List<InlineKeyboardButton>> dateButtons = new ArrayList<>();
-        for (int i = 0; i < numRows; i++) {
-            dateButtons.add(new ArrayList<>());
-        }
-
+        final List<InlineKeyboardButton> dateButtons = new ArrayList<>();
         for (int i = 0; i < numDays; i++) {
-            final List<InlineKeyboardButton> dateRow = dateButtons.get(i / buttonsPerRow);
             final InlineKeyboardButton dateButton = buildDateButton(now.plusDays(i + 1), callbackPrefix);
-            dateRow.add(dateButton);
+            dateButtons.add(dateButton);
         }
-
-        final List<InlineKeyboardRow> dateRows = dateButtons.stream()
-                .map(InlineKeyboardRow::new)
-                .toList();
-
-        return InlineKeyboardMarkup.builder()
-                .keyboard(dateRows)
-                .build();
+        return OptionsKeyboardBuilder.buildOptionsKeyboard(dateButtons, buttonsPerRow);
     }
 
     /**

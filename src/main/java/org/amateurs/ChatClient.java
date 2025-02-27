@@ -3,6 +3,7 @@ package org.amateurs;
 import org.telegram.telegrambots.client.okhttp.OkHttpTelegramClient;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.generics.TelegramClient;
@@ -39,6 +40,21 @@ public class ChatClient {
         SendMessage msg = SendMessage.builder()
                 .chatId(chatId)
                 .parseMode("HTML")
+                .text(txt)
+                .replyMarkup(kb)
+                .build();
+
+        try {
+            client.execute(msg);
+        } catch (TelegramApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void editMessageWithMenu(Long chatId, int msgId, String txt, InlineKeyboardMarkup kb) {
+        EditMessageText msg = EditMessageText.builder()
+                .chatId(chatId)
+                .messageId(msgId)
                 .text(txt)
                 .replyMarkup(kb)
                 .build();
