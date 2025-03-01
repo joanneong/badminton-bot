@@ -6,13 +6,13 @@ import java.util.Arrays;
 
 @Getter
 public enum AddCommandField {
-    DATE(1),
-    TIME_PERIOD(2),
-    START_HOUR(3),
-    START_MINUTE(4),
-    DURATION(5),
-    LOCATION(6),
-    COURTS(7);
+    LOCATION(1),
+    COURTS(2),
+    DATE(3),
+    TIME_PERIOD(4),
+    START_HOUR(5),
+    START_MINUTE(6),
+    DURATION(7);
 
     private final int step;
 

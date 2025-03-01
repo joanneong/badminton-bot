@@ -9,6 +9,8 @@ import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.message.Message;
 
+import static org.amateurs.Command.COMMAND_DELIMITER;
+
 public class Bot implements LongPollingSingleThreadUpdateConsumer {
     private static final Logger LOG = LogManager.getLogger();
 
@@ -24,9 +26,14 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
 
     private void processCommand(Message msg) {
         final Long chatId = msg.getChatId();
-        final Command command = Command.get(msg.getText());
+        final Command command = CommandHelper.extractCommand(msg.getText());
         final CommandExecutor commandExecutor = CommandExecutorFactory.getCommandExecutor(command);
-        commandExecutor.executeCommand(chatId);
+
+        if (msg.getText().contains(COMMAND_DELIMITER)) {
+            commandExecutor.executeCommandWithParams(chatId, msg.getText());
+        } else {
+            commandExecutor.executeCommand(chatId);
+        }
     }
 
     private void processCallbackQuery(CallbackQuery callbackQuery) {
