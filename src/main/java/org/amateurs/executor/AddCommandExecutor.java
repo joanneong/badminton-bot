@@ -17,14 +17,14 @@ public class AddCommandExecutor implements CommandExecutor {
             Where and which court(s) will the game be at?
             
             Respond in this format:
-            <pre>
+            <code>
             /add::{location}::{courts}
-            </pre>
+            </code>
             
-            For example, if you are playing at Choa Chu Kang Sports Hall and you have courts 2 and 4, reply this:
-            <pre>
+            For example, if you are playing at Choa Chu Kang Sports Hall and you have courts 2 and 4, reply like this:
+            <code>
             /add::Choa Chu Kang Sports Hall::2,4
-            </pre>
+            </code>
             """;
 
     private final ChatClient chatClient;
@@ -40,20 +40,30 @@ public class AddCommandExecutor implements CommandExecutor {
 
     @Override
     public void executeCommandWithParams(Long chatId, String params) {
-        int currentStep = params.split(COMMAND_DELIMITER).length;
-        final AddCommandField currentField = AddCommandField.getFieldByStep(currentStep);
-        final String fieldText = getTextForField(currentField, params);
-        final InlineKeyboardMarkup fieldKeyboard = getKeyboardForField(currentField);
+        final String fieldText = getMessageForCurrentData(params);
+        final InlineKeyboardMarkup fieldKeyboard = getKeyboardForCurrentData(params);
         chatClient.sendMenu(chatId, fieldText, fieldKeyboard);
     }
 
     @Override
     public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
         chatClient.closeCallbackQuery(queryId);
-        int currentStep = callbackData.split(COMMAND_DELIMITER).length;
-        final AddCommandField currentField = AddCommandField.getFieldByStep(currentStep);
-        final String fieldText = getTextForField(currentField, callbackData);
-        final InlineKeyboardMarkup fieldKeyboard = getKeyboardForField(currentField);
+        final String fieldText = getMessageForCurrentData(callbackData);
+        final InlineKeyboardMarkup fieldKeyboard = getKeyboardForCurrentData(callbackData);
         chatClient.editMessageWithMenu(chatId, msgId, fieldText, fieldKeyboard);
+    }
+
+    private String getMessageForCurrentData(String data) {
+        int currentStep = data.split(COMMAND_DELIMITER).length;
+        final AddCommandField currentField = AddCommandField.getFieldByStep(currentStep);
+        return getTextForField(currentField, data);
+    }
+
+    private InlineKeyboardMarkup getKeyboardForCurrentData(String data) {
+        int currentStep = data.split(COMMAND_DELIMITER).length;
+        final AddCommandField currentField = AddCommandField.getFieldByStep(currentStep);
+        return currentField.isUseKeyboard()
+                ? getKeyboardForField(currentField, data)
+                : null;
     }
 }

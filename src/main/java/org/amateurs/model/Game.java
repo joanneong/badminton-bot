@@ -36,6 +36,8 @@ public class Game implements Comparable<Game> {
 
     List<String> players;
 
+    int maxPlayers;
+
     @Override
     public int compareTo(@NotNull Game otherGame) {
         return this.date.isEqual(otherGame.getDate())

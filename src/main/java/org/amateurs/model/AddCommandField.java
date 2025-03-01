@@ -6,18 +6,25 @@ import java.util.Arrays;
 
 @Getter
 public enum AddCommandField {
-    LOCATION(1),
-    COURTS(2),
-    DATE(3),
-    TIME_PERIOD(4),
-    START_HOUR(5),
-    START_MINUTE(6),
-    DURATION(7);
+    LOCATION("Location", 1, false),
+    COURTS("Court(s)", 2, false),
+    DATE("Date", 3, true),
+    TIME_PERIOD("Time period", 4, true),
+    START_HOUR("Start hour", 5, true),
+    START_MINUTE("Start minute", 6, true),
+    DURATION("Duration", 7, true),
+    MAX_PLAYERS("Max players", 8, true);
+
+    private final String displayName;
 
     private final int step;
 
-    AddCommandField(int step) {
+    private boolean useKeyboard;
+
+    AddCommandField(String displayName, int step, boolean useKeyboard) {
+        this.displayName = displayName;
         this.step = step;
+        this.useKeyboard = useKeyboard;
     }
 
     public static AddCommandField getFieldByStep(int step) {
