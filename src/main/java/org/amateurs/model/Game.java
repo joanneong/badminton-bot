@@ -11,8 +11,11 @@ import java.util.List;
 @Data
 @Builder
 public class Game implements Comparable<Game> {
-    private static final String DISPLAY_TEMPLATE = """
+    private static final String GAME_ID_TEMPLATE = """
             <u><b>Game %d</b></u>
+            """;
+
+    private static final String DISPLAY_TEMPLATE = """
             <b>Date:</b> %s
             <b>Time:</b> %s to %s
             <b>Location:</b> %s
@@ -45,18 +48,22 @@ public class Game implements Comparable<Game> {
                 : this.date.compareTo(otherGame.getDate());
     }
 
-    /**
-     * Get the game details in a formatted string
-     */
-    public String toDisplayString(int idx) {
+    @Override
+    public String toString() {
         return String.format(DISPLAY_TEMPLATE,
-                idx,
                 DATE_FORMATTER.format(date),
                 TIME_FORMATTER.format(startTime).toUpperCase(),
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
                 getFormattedList(courts),
                 getFormattedList(players));
+    }
+
+    /**
+     * Get the game details in a formatted string
+     */
+    public String toDisplayString(int idx) {
+        return String.format(GAME_ID_TEMPLATE, idx) + this;
     }
 
     private String getFormattedList(List<String> toFormat) {

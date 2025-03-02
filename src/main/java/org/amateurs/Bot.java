@@ -25,6 +25,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
     }
 
     private void processCommand(Message msg) {
+        LOG.info("Processing command with message={}", msg);
         final Long chatId = msg.getChatId();
         final Command command = CommandHelper.extractCommand(msg.getText());
         final CommandExecutor commandExecutor = CommandExecutorFactory.getCommandExecutor(command);
@@ -37,6 +38,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
     }
 
     private void processCallbackQuery(CallbackQuery callbackQuery) {
+        LOG.info("Processing callback query with query={}", callbackQuery);
         final Long chatId = callbackQuery.getMessage().getChatId();
         final int msgId = callbackQuery.getMessage().getMessageId();
         final String queryId = callbackQuery.getId();

@@ -1,5 +1,6 @@
 package org.amateurs.database;
 
+import org.amateurs.ChatClient;
 import org.amateurs.model.Game;
 
 import java.time.ZonedDateTime;
@@ -12,8 +13,18 @@ import java.util.Map;
 public class InMemoryDatabase implements Database {
     final static Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
 
+    private static final InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
+
     static {
         populateWithDummyData();
+    }
+
+    private InMemoryDatabase() {
+
+    }
+
+    public static InMemoryDatabase getInstance() {
+        return inMemoryDatabase;
     }
 
     @Override

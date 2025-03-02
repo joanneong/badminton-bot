@@ -21,7 +21,7 @@ public class ListCommandExecutor implements CommandExecutor {
     private final ChatClient chatClient;
 
     public ListCommandExecutor() {
-        this.database = new InMemoryDatabase();
+        this.database = InMemoryDatabase.getInstance();
         this.chatClient = ChatClient.getInstance();
     }
 
