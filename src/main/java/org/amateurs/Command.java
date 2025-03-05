@@ -20,7 +20,7 @@ public enum Command {
 
     private static final Map<String, Command> COMMAND_MAP;
 
-    public static final String COMMAND_DELIMITER = "::";
+    public static final String COMMAND_DELIMITER = ":";
 
     Command(String command) {
         this.command = command;

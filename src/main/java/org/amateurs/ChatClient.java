@@ -37,7 +37,7 @@ public class ChatClient {
     }
 
     public void sendMenu(Long chatId, String txt, InlineKeyboardMarkup kb) {
-        SendMessage msg = SendMessage.builder()
+        final SendMessage msg = SendMessage.builder()
                 .chatId(chatId)
                 .parseMode("HTML")
                 .text(txt)
@@ -52,11 +52,12 @@ public class ChatClient {
     }
 
     public void editMessageWithMenu(Long chatId, int msgId, String txt, InlineKeyboardMarkup kb) {
-        EditMessageText msg = EditMessageText.builder()
+        final EditMessageText msg = EditMessageText.builder()
                 .chatId(chatId)
                 .messageId(msgId)
                 .text(txt)
                 .replyMarkup(kb)
+                .parseMode("HTML")
                 .build();
 
         try {

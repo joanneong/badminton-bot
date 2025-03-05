@@ -1,6 +1,5 @@
 package org.amateurs.database;
 
-import org.amateurs.ChatClient;
 import org.amateurs.model.Game;
 
 import java.time.ZonedDateTime;

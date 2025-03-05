@@ -17,7 +17,7 @@ public class Bot implements LongPollingSingleThreadUpdateConsumer {
     @Override
     public void consume(Update update) {
         LOG.info("Received update={}", update);
-        if (update.getMessage() != null && update.getMessage().isCommand()) {
+        if (update.getMessage() != null) {
             processCommand(update.getMessage());
         } else if (update.hasCallbackQuery()) {
             processCallbackQuery(update.getCallbackQuery());

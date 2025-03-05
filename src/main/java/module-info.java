@@ -6,4 +6,5 @@ module badminton.bot {
     requires telegrambots.client;
     requires telegrambots.longpolling;
     requires telegrambots.meta;
+    requires org.checkerframework.checker.qual;
 }
