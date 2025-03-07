@@ -77,9 +77,9 @@ public class InMemoryDatabase implements Database {
         final ZonedDateTime now = ZonedDateTime.now();
         final List<Game> dummyGames = new ArrayList<>();
         final Game dummyGame = Game.builder()
-                .date(now.plusDays(3))
-                .startTime(now.plusDays(3).plusHours(1))
-                .endTime(now.plusDays(3).plusHours(3))
+                .date(now.toLocalDate().plusDays(3))
+                .startTime(now.toLocalTime().plusHours(1))
+                .endTime(now.toLocalTime().plusHours(3))
                 .location("CCK Sports Hall")
                 .courts(List.of("1"))
                 .players(List.of("Jojopup123"))

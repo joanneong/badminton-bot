@@ -9,12 +9,15 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public class DateOptionsKeyboardBuilder {
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL (EEE)");
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL (EEE)", Locale.US);
+
+    public static final ZoneId ASIA_TIMEZONE = ZoneId.of("Asia/Kuala_Lumpur");
 
     public static InlineKeyboardMarkup buildDateOptionsKeyboard(int numDays, int buttonsPerRow, String callbackPrefix) {
-        final ZonedDateTime now = ZonedDateTime.now(ZoneId.of("Asia/Kuala_Lumpur"));
+        final ZonedDateTime now = ZonedDateTime.now(ASIA_TIMEZONE);
         final List<InlineKeyboardButton> dateButtons = new ArrayList<>();
         for (int i = 0; i < numDays; i++) {
             final InlineKeyboardButton dateButton = buildDateButton(now.plusDays(i + 1), callbackPrefix);

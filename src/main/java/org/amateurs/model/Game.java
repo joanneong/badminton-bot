@@ -4,9 +4,11 @@ import lombok.Builder;
 import lombok.Data;
 import org.jetbrains.annotations.NotNull;
 
-import java.time.ZonedDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 
 @Data
 @Builder
@@ -23,15 +25,15 @@ public class Game implements Comparable<Game> {
             <b>Players(s):</b> %s
             """;
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)");
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)", Locale.US);
 
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma");
+    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma", Locale.US);
 
-    ZonedDateTime date;
+    LocalDate date;
 
-    ZonedDateTime startTime;
+    LocalTime startTime;
 
-    ZonedDateTime endTime;
+    LocalTime endTime;
 
     String location;
 
@@ -44,7 +46,7 @@ public class Game implements Comparable<Game> {
     @Override
     public int compareTo(@NotNull Game otherGame) {
         return this.date.isEqual(otherGame.getDate())
-                ? this.startTime.compareTo(otherGame.getDate())
+                ? this.startTime.compareTo(otherGame.getStartTime())
                 : this.date.compareTo(otherGame.getDate());
     }
 
@@ -67,6 +69,9 @@ public class Game implements Comparable<Game> {
     }
 
     private String getFormattedList(List<String> toFormat) {
+        if (toFormat == null || toFormat.isEmpty()) {
+            return "";
+        }
         return String.join(", ", toFormat);
     }
 }

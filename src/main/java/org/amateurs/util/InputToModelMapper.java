@@ -1,20 +1,52 @@
 package org.amateurs.util;
 
+import org.amateurs.model.AddCommandField;
 import org.amateurs.model.Game;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+
+import static org.amateurs.Command.COMMAND_DELIMITER;
+import static org.amateurs.components.DateOptionsKeyboardBuilder.ASIA_TIMEZONE;
 
 public class InputToModelMapper {
     public static Game mapInputToGame(String input) {
-        final ZonedDateTime now = ZonedDateTime.now();
+        final String[] components = input.split(COMMAND_DELIMITER);
+        final String location = components[AddCommandField.LOCATION.getStep()];
+        final List<String> courts = List.of(components[AddCommandField.COURTS.getStep()].split(","));
+        final String dateInput = components[AddCommandField.DATE.getStep()];
+        final LocalDate date = parseDate(dateInput);
+        final LocalTime startTime = parseStartTimeInput(components);
+        final String duration = components[AddCommandField.DURATION.getStep()];
+        final String maxPlayers = components[AddCommandField.MAX_PLAYERS.getStep()];
+
         return Game.builder()
-                .date(now.plusDays(3))
-                .startTime(now.plusDays(3).plusHours(1))
-                .endTime(now.plusDays(3).plusHours(3))
-                .location("CCK Sports Hall")
-                .courts(List.of("1"))
-                .players(List.of("Jojopup123"))
+                .location(location)
+                .courts(courts)
+                .date(date)
+                .startTime(startTime)
+                .endTime(startTime.plusHours(Long.parseLong(duration)))
+                .maxPlayers(Integer.parseInt(maxPlayers))
                 .build();
+    }
+
+    private static LocalDate parseDate(String input) {
+        final ZonedDateTime now = ZonedDateTime.now(ASIA_TIMEZONE);
+        final String inputWithYear = String.join(" ", input, String.valueOf(now.getYear()));
+        final DateTimeFormatter fullDateFormatter = DateTimeFormatter.ofPattern("dd LLL (EEE) u", Locale.US);
+        return LocalDate.parse(inputWithYear, fullDateFormatter);
+    }
+
+    private static LocalTime parseStartTimeInput(String[] input) {
+        final String timePeriod = input[AddCommandField.TIME_PERIOD.getStep()];
+        final String startHour = input[AddCommandField.START_HOUR.getStep()];
+        final String startMinute = input[AddCommandField.START_MINUTE.getStep()];
+        final String fullStartTime = String.join(":", startHour, startMinute, timePeriod);
+        final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("h:m:a", Locale.US);
+        return LocalTime.parse(fullStartTime, timeFormatter);
     }
 }
