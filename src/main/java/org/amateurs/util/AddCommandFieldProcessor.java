@@ -4,12 +4,12 @@ import org.amateurs.model.AddCommandField;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
 import java.util.List;
-import java.util.stream.IntStream;
 
 import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.components.DateOptionsKeyboardBuilder.buildDateOptionsKeyboard;
 import static org.amateurs.components.OptionsKeyboardBuilder.buildOptionsKeyboard;
 import static org.amateurs.executor.AddCommandExecutor.ADD_TEMPLATE;
+import static org.amateurs.util.CommandExecutorUtil.generateSequentialInt;
 
 public class AddCommandFieldProcessor {
     public static String getTextForField(AddCommandField field, String callbackData) {
@@ -47,12 +47,5 @@ public class AddCommandFieldProcessor {
         }
         formattedData.append("\n");
         return formattedData.toString();
-    }
-
-    private static List<String> generateSequentialInt(int start, int end, int interval) {
-        return IntStream.iterate(start, i -> i + interval)
-                .limit((end - start) / interval + 1)
-                .mapToObj(String::valueOf)
-                .toList();
     }
 }

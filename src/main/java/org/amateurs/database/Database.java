@@ -13,12 +13,27 @@ public interface Database {
     List<Game> getAllGames(Long chatId);
 
     /**
+     * Get all ids for games associated with a chat id that are on/after today
+     * @param chatId        chat id of the chat (individual or group)
+     * @return              ids of games associated with the chat id
+     */
+    List<String> getAllGameIds(Long chatId);
+
+    /**
      * Add a new game and associate it with a chat id
      * @param chatId        chat id of the chat (individual or group)
      * @param newGame       details of the new game
      * @return              all games associated with the chat id
      */
     List<Game> addGame(Long chatId, Game newGame);
+
+    /**
+     * Add players to a game with a game id
+     * @param gameId        game id of the game
+     * @param players       players to add to the game
+     * @return              the updated game details
+     */
+    Game addPlayersToGame(String gameId, List<String> players);
 
     /**
      * Edit a game belonging to a chat

@@ -94,7 +94,7 @@ public class AddCommandExecutor implements CommandExecutor {
         final AddCommandField field = getCommandField(updatedData);
         LOG.info("Updated data={}", updatedData);
         if (field.isTerminal()) {
-            processTerminalField(chatId, msgId, updatedData);
+            processTerminalField(key, chatId, msgId, updatedData);
         } else {
             final String fieldText = getMessageForCurrentData(updatedData);
             final String callbackPrefix = ADD_COMMAND.getCommand() + COMMAND_DELIMITER + key;
@@ -103,8 +103,8 @@ public class AddCommandExecutor implements CommandExecutor {
         }
     }
 
-    private void processTerminalField(Long chatId, int msgId, String data) {
-        final Game game = mapInputToGame(data);
+    private void processTerminalField(String gameId, Long chatId, int msgId, String data) {
+        final Game game = mapInputToGame(gameId, data);
         database.addGame(chatId, game);
         chatClient.editMessageWithMenu(chatId, msgId, game.toString(), null);
     }

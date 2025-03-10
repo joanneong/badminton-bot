@@ -14,7 +14,7 @@ import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.components.DateOptionsKeyboardBuilder.ASIA_TIMEZONE;
 
 public class InputToModelMapper {
-    public static Game mapInputToGame(String input) {
+    public static Game mapInputToGame(String gameId, String input) {
         final String[] components = input.split(COMMAND_DELIMITER);
         final String location = components[AddCommandField.LOCATION.getStep()];
         final List<String> courts = List.of(components[AddCommandField.COURTS.getStep()].split(","));
@@ -25,6 +25,7 @@ public class InputToModelMapper {
         final String maxPlayers = components[AddCommandField.MAX_PLAYERS.getStep()];
 
         return Game.builder()
+                .id(gameId)
                 .location(location)
                 .courts(courts)
                 .date(date)

@@ -10,6 +10,7 @@ public class CommandExecutorFactory {
             case ADD_COMMAND -> new AddCommandExecutor();
             case EDIT_COMMAND -> new EditCommandExecutor();
             case DELETE_COMMAND -> new DeleteCommandExecutor();
+            case JOIN_COMMAND -> new JoinCommandExecutor();
         };
     }
 }

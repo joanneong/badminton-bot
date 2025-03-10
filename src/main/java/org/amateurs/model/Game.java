@@ -2,11 +2,14 @@ package org.amateurs.model;
 
 import lombok.Builder;
 import lombok.Data;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -29,17 +32,26 @@ public class Game implements Comparable<Game> {
 
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma", Locale.US);
 
+    @NonNull
+    String id;
+
+    @NonNull
     LocalDate date;
 
+    @NonNull
     LocalTime startTime;
 
+    @NonNull
     LocalTime endTime;
 
+    @NonNull
     String location;
 
+    @NonNull
     List<String> courts;
 
-    List<String> players;
+    @Builder.Default
+    List<String> players = new ArrayList<>();
 
     int maxPlayers;
 
@@ -58,7 +70,20 @@ public class Game implements Comparable<Game> {
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
                 getFormattedList(courts),
-                getFormattedList(players));
+                getBulletedList(players, maxPlayers));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null) {
+            return false;
+        }
+
+        if (!(o instanceof Game otherGame)) {
+            return false;
+        }
+
+        return this.id.equals(otherGame.getId());
     }
 
     /**
@@ -68,10 +93,34 @@ public class Game implements Comparable<Game> {
         return String.format(GAME_ID_TEMPLATE, idx) + this;
     }
 
+    public void addPlayers(List<String> newPlayers) {
+        final Iterator<String> newPlayerIterator = newPlayers.iterator();
+        while (players.size() < maxPlayers && newPlayerIterator.hasNext()) {
+            players.add(newPlayerIterator.next());
+        }
+    }
+
     private String getFormattedList(List<String> toFormat) {
         if (toFormat == null || toFormat.isEmpty()) {
             return "";
         }
         return String.join(", ", toFormat);
+    }
+
+    private String getBulletedList(List<String> items, int maxItems) {
+        if (items == null) {
+            return "";
+        }
+
+        final StringBuilder sb = new StringBuilder("\n");
+        for (int i = 1; i <= items.size(); i++) {
+            sb.append(i).append(". ").append(items.get(i - 1)).append("\n");
+        }
+
+        for (int i = items.size() + 1; i <= maxItems; i++) {
+            sb.append(i).append(".").append("\n");
+        }
+
+        return sb.toString();
     }
 }
