@@ -12,7 +12,7 @@ public class ListCommandExecutor implements CommandExecutor {
             Here are all your upcoming games:
             """;
 
-    private static final String NO_GAME_TEMPLATE = """
+    protected static final String NO_GAME_TEMPLATE = """
             You do not have any upcoming games :( How can???
             """;
 

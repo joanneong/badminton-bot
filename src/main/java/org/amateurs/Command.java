@@ -15,7 +15,8 @@ public enum Command {
     ADD_COMMAND ("/add"),
     EDIT_COMMAND ("/edit"),
     DELETE_COMMAND ("/delete"),
-    JOIN_COMMAND ("/join");
+    JOIN_COMMAND ("/join"),
+    INVITE_COMMAND ("/invite");
 
     private final String command;
 

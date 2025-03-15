@@ -11,6 +11,7 @@ public class CommandExecutorFactory {
             case EDIT_COMMAND -> new EditCommandExecutor();
             case DELETE_COMMAND -> new DeleteCommandExecutor();
             case JOIN_COMMAND -> new JoinCommandExecutor();
+            case INVITE_COMMAND -> new InviteCommandExecutor();
         };
     }
 }
