@@ -22,6 +22,7 @@ public class AddCommandFieldProcessor {
             case START_MINUTE -> "What minute does the game start at?";
             case DURATION -> "How many hours will the game last for?";
             case MAX_PLAYERS -> "What's the max number of players for the game?";
+            case PRICE_PER_PAX -> "What's the price you want to charge for each player?";
             case CONFIRM_GAME -> null;
         };
     }
@@ -35,6 +36,7 @@ public class AddCommandFieldProcessor {
             case START_MINUTE -> buildOptionsKeyboard(generateSequentialInt(0, 45, 15), data, 4);
             case DURATION -> buildOptionsKeyboard(generateSequentialInt(1, 4, 1), data, 4);
             case MAX_PLAYERS -> buildOptionsKeyboard(generateSequentialInt(1, 13, 1), data, 4);
+            case PRICE_PER_PAX -> buildOptionsKeyboard(generateSequentialInt(0, 13, 1), data, 4);
         };
     }
 

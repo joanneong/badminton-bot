@@ -3,6 +3,7 @@ package org.amateurs.database;
 import org.amateurs.model.Game;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface Database {
     /**
@@ -18,6 +19,13 @@ public interface Database {
      * @return              ids of games associated with the chat id
      */
     List<String> getAllGameIds(Long chatId);
+
+    /**
+     * Gets a game by its id
+     * @param gameId        unique id of a game
+     * @return              game associated with this id
+     */
+    Optional<Game> getGameById(String gameId);
 
     /**
      * Add a new game and associate it with a chat id

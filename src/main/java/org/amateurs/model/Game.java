@@ -13,6 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
+import static org.amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
+
 @Data
 @Builder
 public class Game implements Comparable<Game> {
@@ -26,6 +28,17 @@ public class Game implements Comparable<Game> {
             <b>Location:</b> %s
             <b>Court(s):</b> %s
             <b>Players(s):</b> %s
+            """;
+
+    private static final String INVITATION_TEMPLATE = """
+            Looking for %d more players for friendly doubles! %s
+            
+            <b>Date:</b> %s
+            <b>Time:</b> %s to %s
+            <b>Location:</b> %s
+            <b>Court(s):</b> %s
+            <b>Price/pax:</b> $%d
+            <b>Max players:</b> %d
             """;
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)", Locale.US);
@@ -54,6 +67,8 @@ public class Game implements Comparable<Game> {
     List<String> players = new ArrayList<>();
 
     int maxPlayers;
+
+    int pricePerPax;
 
     @Override
     public int compareTo(@NotNull Game otherGame) {
@@ -91,6 +106,19 @@ public class Game implements Comparable<Game> {
      */
     public String toDisplayString(int idx) {
         return String.format(GAME_ID_TEMPLATE, idx) + this;
+    }
+
+    public String toInvitationString() {
+        return String.format(INVITATION_TEMPLATE,
+                maxPlayers - players.size(),
+                BADMINTON_EMOJI,
+                DATE_FORMATTER.format(date),
+                TIME_FORMATTER.format(startTime).toUpperCase(),
+                TIME_FORMATTER.format(endTime).toUpperCase(),
+                location,
+                getFormattedList(courts),
+                pricePerPax,
+                maxPlayers);
     }
 
     public void addPlayers(List<String> newPlayers) {

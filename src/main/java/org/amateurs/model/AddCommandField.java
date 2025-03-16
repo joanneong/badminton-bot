@@ -14,7 +14,8 @@ public enum AddCommandField {
     START_MINUTE("Start minute", 6, true, false),
     DURATION("Duration (hours)", 7, true, false),
     MAX_PLAYERS("Max players", 8, true, false),
-    CONFIRM_GAME("Confirm game", 9, false, true);
+    PRICE_PER_PAX("Price per pax", 9, true, false),
+    CONFIRM_GAME("Confirm game", 10, false, true);
 
     private final String displayName;
 

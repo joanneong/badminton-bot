@@ -21,7 +21,7 @@ import static org.amateurs.util.InputToModelMapper.mapInputToGame;
 
 /**
  * Adds a game by constructing a Game string with this format:
- * /add:{location}:{courts}:{date}:{time period}:{start hour}:{start minute}:{duration}
+ * /add:{location}:{courts}:{date}:{time period}:{start hour}:{start minute}:{duration}:{pricePerPax}
  *
  * Callback data for keyboard buttons follows this format:
  * /add:{UUID}:{new_field_value}

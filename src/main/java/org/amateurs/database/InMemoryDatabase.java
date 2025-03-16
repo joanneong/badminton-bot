@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public class InMemoryDatabase implements Database {
     final static Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
@@ -40,6 +41,11 @@ public class InMemoryDatabase implements Database {
         List<Game> games = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
         Collections.sort(games);
         return games.stream().map(Game::getId).toList();
+    }
+
+    @Override
+    public Optional<Game> getGameById(String gameId) {
+        return Optional.ofNullable(allGames.get(gameId));
     }
 
     @Override
@@ -106,6 +112,7 @@ public class InMemoryDatabase implements Database {
                 .courts(List.of("1"))
                 .players(new ArrayList<>(Arrays.asList("Jojopup123".split(","))))
                 .maxPlayers(6)
+                .pricePerPax(6)
                 .build();
         dummyGames.add(dummyGame);
         sortedGamesForChatId.put(197040891L, dummyGames);

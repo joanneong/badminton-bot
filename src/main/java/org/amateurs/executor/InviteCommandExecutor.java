@@ -10,12 +10,18 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.Command.INVITE_COMMAND;
 import static org.amateurs.components.OptionsKeyboardBuilder.buildOptionsKeyboard;
 import static org.amateurs.executor.ListCommandExecutor.NO_GAME_TEMPLATE;
 
+/**
+ * Supported formats:
+ * 1. /invite - get general template to ask about what games to invite for
+ * 2. /invite:{gameId} - create invitation(s)
+ */
 public class InviteCommandExecutor implements CommandExecutor {
     private static final String INVITE_TEMPLATE = """
             Which game(s) do you want to prepare an invite for?
@@ -34,6 +40,7 @@ public class InviteCommandExecutor implements CommandExecutor {
 
     @Override
     public void executeCommand(Long chatId) {
+        LOG.info("Executing invite command for chatId={}", chatId);
         final List<Game> allGames = database.getAllGames(chatId);
         if (allGames.isEmpty()) {
             chatClient.sendText(chatId, NO_GAME_TEMPLATE);
@@ -61,6 +68,26 @@ public class InviteCommandExecutor implements CommandExecutor {
 
     @Override
     public void executeCallbackQuery(Long chatId, int msgId, String queryId, String callbackData) {
+        LOG.info("Executing callback query for chatId={}, msgId={}, queryId={} and callbackData={}",
+                chatId, msgId, queryId, callbackData);
+        chatClient.closeCallbackQuery(queryId);
 
+        final String[] callbackComponents = callbackData.split(COMMAND_DELIMITER);
+
+        if (callbackComponents.length == 2) {
+            if (callbackComponents[1].equals(String.valueOf(chatId))) {
+                final List<Game> allGames = database.getAllGames(chatId);
+                for (Game game : allGames) {
+                    chatClient.sendText(chatId, game.toInvitationString());
+                }
+            } else {
+                final Optional<Game> game = database.getGameById(callbackComponents[1]);
+                if (game.isEmpty()) {
+                    throw new IllegalArgumentException("Game does not exist!");
+                }
+
+                chatClient.sendText(chatId, game.get().toInvitationString());
+            }
+        }
     }
 }

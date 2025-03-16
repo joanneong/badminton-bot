@@ -9,11 +9,9 @@ import static org.amateurs.Command.ADD_COMMAND;
 import static org.amateurs.Command.DELETE_COMMAND;
 import static org.amateurs.Command.EDIT_COMMAND;
 import static org.amateurs.Command.LIST_COMMAND;
+import static org.amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
 
 public class StartCommandExecutor implements CommandExecutor {
-    private static final String BADMINTON_EMOJI = new String(Character.toChars(
-            Integer.parseInt("1F3F8", 16)));
-
     private static final String HELP_TEMPLATE = """
                 Welcome to BadmintonBot! %s
                 
