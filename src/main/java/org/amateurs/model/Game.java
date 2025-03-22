@@ -92,21 +92,21 @@ public class Game implements Comparable<Game> {
         return this.id.equals(otherGame.getId());
     }
 
-    /**
-     * Get the game details in a formatted string
-     */
-    public String getGameInfoString(int idx) {
+    public String getIndexedGameInfoString(int idx) {
         return String.format(GAME_ID_TEMPLATE, idx) + this;
     }
 
-    public String getFullGameInfoString(int idx) {
-        final String additionalGameInfo = String.format(FULL_GAME_INFO_TEMPLATE,
+    public String getIndexedFullGameInfoString(int idx) {
+        return String.format(GAME_ID_TEMPLATE, idx) + getFullGameInfoString();
+    }
+
+    public String getFullGameInfoString() {
+        return String.format(FULL_GAME_INFO_TEMPLATE,
                 DATE_FORMATTER.format(date),
                 TIME_FORMATTER.format(startTime).toUpperCase(),
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
                 getFormattedList(courts),
                 getBulletedList(players.stream().map(Player::getName).toList(), maxPlayers));
-        return String.format(GAME_ID_TEMPLATE, idx) + additionalGameInfo;
     }
 }

@@ -72,7 +72,7 @@ public class CommandExecutorUtil {
         final StringBuilder msg = new StringBuilder(template);
         for (int i = 0; i < games.size(); i++) {
             msg.append("\n");
-            msg.append(games.get(i).getGameInfoString(i + 1));
+            msg.append(games.get(i).getIndexedGameInfoString(i + 1));
         }
         return msg.toString();
     }

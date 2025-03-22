@@ -1,14 +1,12 @@
 package org.amateurs.executor;
 
 import org.amateurs.ChatClient;
+import org.amateurs.Command;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardRow;
 
-import static org.amateurs.Command.ADD_COMMAND;
-import static org.amateurs.Command.DELETE_COMMAND;
-import static org.amateurs.Command.EDIT_COMMAND;
-import static org.amateurs.Command.LIST_COMMAND;
+import static org.amateurs.Command.START_COMMAND;
 import static org.amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
 
 public class StartCommandExecutor implements CommandExecutor {
@@ -23,30 +21,20 @@ public class StartCommandExecutor implements CommandExecutor {
     private final ChatClient chatClient;
 
     public StartCommandExecutor() {
-        var listButton = InlineKeyboardButton.builder()
-                .text("List all games").callbackData(LIST_COMMAND.getCommand())
-                .build();
+        final InlineKeyboardMarkup.InlineKeyboardMarkupBuilder<?, ?> keyboardMarkupBuilder = InlineKeyboardMarkup.builder();
 
-        var addButton = InlineKeyboardButton.builder()
-                .text("Add a game").callbackData(ADD_COMMAND.getCommand())
-                .build();
-
-        var editButton = InlineKeyboardButton.builder()
-                .text("Edit a game").callbackData(EDIT_COMMAND.getCommand())
-                .build();
-
-        var deleteButton = InlineKeyboardButton.builder()
-                .text("Delete a game").callbackData(DELETE_COMMAND.getCommand())
-                .build();
+        for (Command command : Command.values()) {
+            if (command != START_COMMAND) {
+                final InlineKeyboardButton inlineKeyboardButton = InlineKeyboardButton.builder()
+                        .text(command.getDescription())
+                        .callbackData(command.getCommand())
+                        .build();
+                keyboardMarkupBuilder.keyboardRow(new InlineKeyboardRow(inlineKeyboardButton));
+            }
+        }
 
         this.chatClient = ChatClient.getInstance();
-
-        this.startMenu = InlineKeyboardMarkup.builder()
-                .keyboardRow(new InlineKeyboardRow(listButton))
-                .keyboardRow(new InlineKeyboardRow(addButton))
-                .keyboardRow(new InlineKeyboardRow(editButton))
-                .keyboardRow(new InlineKeyboardRow(deleteButton))
-                .build();
+        this.startMenu = keyboardMarkupBuilder.build();
     }
 
     @Override

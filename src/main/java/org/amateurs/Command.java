@@ -10,22 +10,24 @@ import static java.util.stream.Collectors.toMap;
 
 @Getter
 public enum Command {
-    START_COMMAND ("/start"),
-    LIST_COMMAND ("/list"),
-    ADD_COMMAND ("/add"),
-    EDIT_COMMAND ("/edit"),
-    DELETE_COMMAND ("/delete"),
-    JOIN_COMMAND ("/join"),
-    INVITE_COMMAND ("/invite");
+    START_COMMAND ("/start", "Get started here"),
+    LIST_COMMAND ("/list", "List all games"),
+    ADD_COMMAND ("/add", "Add a game"),
+    DELETE_COMMAND ("/delete", "Delete a game"),
+    JOIN_COMMAND ("/join", "Add player(s) to a game"),
+    INVITE_COMMAND ("/invite", "Create invitation for a game");
 
     private final String command;
+
+    private final String description;
 
     private static final Map<String, Command> COMMAND_MAP;
 
     public static final String COMMAND_DELIMITER = ":";
 
-    Command(String command) {
+    Command(String command, String description) {
         this.command = command;
+        this.description = description;
     }
 
     static {

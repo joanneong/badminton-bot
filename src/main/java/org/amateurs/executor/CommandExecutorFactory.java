@@ -8,7 +8,6 @@ public class CommandExecutorFactory {
             case START_COMMAND -> new StartCommandExecutor();
             case LIST_COMMAND -> new ListCommandExecutor();
             case ADD_COMMAND -> new AddCommandExecutor();
-            case EDIT_COMMAND -> new EditCommandExecutor();
             case DELETE_COMMAND -> new DeleteCommandExecutor();
             case JOIN_COMMAND -> new JoinCommandExecutor();
             case INVITE_COMMAND -> new InviteCommandExecutor();

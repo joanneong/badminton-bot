@@ -36,7 +36,7 @@ public class ListCommandExecutor implements CommandExecutor {
         final StringBuilder allGameDetails = new StringBuilder(LIST_TEMPLATE);
         for (int i = 0; i < allGames.size(); i++) {
             allGameDetails.append("\n");
-            allGameDetails.append(allGames.get(i).getFullGameInfoString(i + 1));
+            allGameDetails.append(allGames.get(i).getIndexedFullGameInfoString(i + 1));
         }
 
         chatClient.sendText(chatId, allGameDetails.toString());

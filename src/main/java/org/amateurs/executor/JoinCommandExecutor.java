@@ -13,8 +13,8 @@ import java.util.List;
 
 import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.Command.JOIN_COMMAND;
-import static org.amateurs.components.OptionsKeyboardBuilder.buildOptionsKeyboard;
-import static org.amateurs.util.CommandExecutorUtil.generateSequentialInt;
+import static org.amateurs.util.CommandExecutorUtil.generateKeyboardForGames;
+import static org.amateurs.util.CommandExecutorUtil.generateMessageWithGameInfo;
 
 /**
  * Adds players to a game by constructing a Game string with this format:
@@ -72,21 +72,16 @@ public class JoinCommandExecutor implements CommandExecutor {
     @Override
     public void executeCommand(Long chatId) {
         LOG.info("Executing join command for chatId={}", chatId);
-        final List<String> gameIds = database.getAllGameIds(chatId);
-        if (gameIds.isEmpty()) {
+        final List<Game> allGames = database.getAllGames(chatId);
+        if (allGames.isEmpty()) {
             chatClient.sendText(chatId, NO_GAME_FOUND_TEMPLATE);
             return;
         }
 
-        final List<String> labels = generateSequentialInt(1, gameIds.size(), 1)
-                .stream()
-                .map(gameIdx -> String.format("Game %s", gameIdx))
-                .toList();
-        final List<String> callbackData = gameIds.stream()
-                .map(gameId -> String.join(COMMAND_DELIMITER, JOIN_COMMAND.getCommand(), gameId))
-                .toList();
-        final InlineKeyboardMarkup gameOptions = buildOptionsKeyboard(labels, callbackData, 3);
-        chatClient.sendMenu(chatId, JOIN_TEMPLATE, gameOptions);
+        final String joinMsg = generateMessageWithGameInfo(JOIN_TEMPLATE, allGames);
+        final List<String> gameIds = allGames.stream().map(Game::getId).toList();
+        final InlineKeyboardMarkup keyboard = generateKeyboardForGames(JOIN_COMMAND, gameIds);
+        chatClient.sendMenu(chatId, joinMsg, keyboard);
     }
 
     @Override
@@ -117,7 +112,7 @@ public class JoinCommandExecutor implements CommandExecutor {
             return;
         }
 
-        chatClient.sendText(chatId, String.format(UPDATED_GAME_TEMPLATE, updatedGame));
+        chatClient.sendText(chatId, String.format(UPDATED_GAME_TEMPLATE, updatedGame.getFullGameInfoString()));
     }
 
     private void sendInstructionsToAddPlayers(Long chatId, int msgId, String[] callbackComponents) {
