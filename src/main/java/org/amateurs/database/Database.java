@@ -55,8 +55,8 @@ public interface Database {
     /**
      * Delete a game belonging to a chat
      * @param chatId        chat id of the chat (individual or group)
-     * @param index         index of the game to delete (1-based indexing)
-     * @return              all games associated with the chat id
+     * @param gameId        unique identifier of the game to delete
+     * @return              boolean indicating whether the delete operation was completed successfully
      */
-    List<Game> deleteGame(Long chatId, int index);
+    boolean deleteGame(Long chatId, String gameId);
 }

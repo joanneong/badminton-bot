@@ -14,6 +14,10 @@ import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.components.DateOptionsKeyboardBuilder.ASIA_TIMEZONE;
 
 public class InputToModelMapper {
+    public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)", Locale.US);
+
+    public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma", Locale.US);
+
     public static Game mapInputToGame(String gameId, String input) {
         final String[] components = input.split(COMMAND_DELIMITER);
         final String location = components[AddCommandField.LOCATION.getStep()];

@@ -8,14 +8,18 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.amateurs.Command.COMMAND_DELIMITER;
 import static org.amateurs.Command.INVITE_COMMAND;
-import static org.amateurs.components.OptionsKeyboardBuilder.buildOptionsKeyboard;
 import static org.amateurs.executor.ListCommandExecutor.NO_GAME_TEMPLATE;
+import static org.amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
+import static org.amateurs.util.CommandExecutorUtil.generateKeyboardForGames;
+import static org.amateurs.util.CommandExecutorUtil.generateMessageWithGameInfo;
+import static org.amateurs.util.InputToModelMapper.DATE_FORMATTER;
+import static org.amateurs.util.InputToModelMapper.TIME_FORMATTER;
+import static org.amateurs.util.StringDisplayUtil.getFormattedList;
 
 /**
  * Supported formats:
@@ -25,6 +29,17 @@ import static org.amateurs.executor.ListCommandExecutor.NO_GAME_TEMPLATE;
 public class InviteCommandExecutor implements CommandExecutor {
     private static final String INVITE_TEMPLATE = """
             Which game(s) do you want to prepare an invite for?
+            """;
+
+    private static final String INVITATION_TEMPLATE = """
+            Looking for %d more players for friendly doubles! %s
+            
+            <b>Date:</b> %s
+            <b>Time:</b> %s to %s
+            <b>Location:</b> %s
+            <b>Court(s):</b> %s
+            <b>Price/pax:</b> $%d
+            <b>Max players:</b> %d
             """;
 
     private final ChatClient chatClient;
@@ -47,23 +62,11 @@ public class InviteCommandExecutor implements CommandExecutor {
             return;
         }
 
-        final StringBuilder invitation = new StringBuilder(INVITE_TEMPLATE);
-        final List<String> gameNames = new ArrayList<>();
-        final List<String> gameIds = new ArrayList<>();
-        for (int i = 0; i < allGames.size(); i++) {
-            invitation.append("\n");
-            invitation.append(allGames.get(i).toDisplayString(i + 1));
-            gameNames.add(String.format("Game %d", i + 1));
-            gameIds.add(String.join(COMMAND_DELIMITER, INVITE_COMMAND.getCommand(), allGames.get(i).getId()));
-        }
-
-        if (allGames.size() > 1) {
-            gameNames.add("All games");
-            gameIds.add(String.join(COMMAND_DELIMITER, INVITE_COMMAND.getCommand(), String.valueOf(chatId)));
-        }
-
-        final InlineKeyboardMarkup keyboard = buildOptionsKeyboard(gameNames, gameIds, 3);
-        chatClient.sendMenu(chatId, invitation.toString(), keyboard);
+        final String invitation = generateMessageWithGameInfo(INVITE_TEMPLATE, allGames);
+        final List<String> gameIds = allGames.stream().map(Game::getId).toList();
+        final InlineKeyboardMarkup keyboard =
+                generateKeyboardForGames(INVITE_COMMAND, gameIds, true, String.valueOf(chatId));
+        chatClient.sendMenu(chatId, invitation, keyboard);
     }
 
     @Override
@@ -78,7 +81,7 @@ public class InviteCommandExecutor implements CommandExecutor {
             if (callbackComponents[1].equals(String.valueOf(chatId))) {
                 final List<Game> allGames = database.getAllGames(chatId);
                 for (Game game : allGames) {
-                    chatClient.sendText(chatId, game.toInvitationString());
+                    chatClient.sendText(chatId, generateGameInvitation(game));
                 }
             } else {
                 final Optional<Game> game = database.getGameById(callbackComponents[1]);
@@ -86,8 +89,21 @@ public class InviteCommandExecutor implements CommandExecutor {
                     throw new IllegalArgumentException("Game does not exist!");
                 }
 
-                chatClient.sendText(chatId, game.get().toInvitationString());
+                chatClient.sendText(chatId, generateGameInvitation(game.get()));
             }
         }
+    }
+
+    private String generateGameInvitation(Game game) {
+        return String.format(INVITATION_TEMPLATE,
+                game.getMaxPlayers() - game.getPlayers().size(),
+                BADMINTON_EMOJI,
+                DATE_FORMATTER.format(game.getDate()),
+                TIME_FORMATTER.format(game.getStartTime()).toUpperCase(),
+                TIME_FORMATTER.format(game.getEndTime()).toUpperCase(),
+                game.getLocation(),
+                getFormattedList(game.getCourts()),
+                game.getPricePerPax(),
+                game.getMaxPlayers());
     }
 }

@@ -7,12 +7,13 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import static org.amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
+import static org.amateurs.util.InputToModelMapper.DATE_FORMATTER;
+import static org.amateurs.util.InputToModelMapper.TIME_FORMATTER;
+import static org.amateurs.util.StringDisplayUtil.getBulletedList;
+import static org.amateurs.util.StringDisplayUtil.getFormattedList;
 
 @Data
 @Builder
@@ -21,28 +22,20 @@ public class Game implements Comparable<Game> {
             <u><b>Game %d</b></u>
             """;
 
-    private static final String DISPLAY_TEMPLATE = """
+    private static final String GAME_INFO_TEMPLATE = """
+            <b>Date:</b> %s
+            <b>Time:</b> %s to %s
+            <b>Location:</b> %s
+            <b>Court(s):</b> %s
+            """;
+
+    private static final String FULL_GAME_INFO_TEMPLATE = """
             <b>Date:</b> %s
             <b>Time:</b> %s to %s
             <b>Location:</b> %s
             <b>Court(s):</b> %s
             <b>Players(s):</b> %s
             """;
-
-    private static final String INVITATION_TEMPLATE = """
-            Looking for %d more players for friendly doubles! %s
-            
-            <b>Date:</b> %s
-            <b>Time:</b> %s to %s
-            <b>Location:</b> %s
-            <b>Court(s):</b> %s
-            <b>Price/pax:</b> $%d
-            <b>Max players:</b> %d
-            """;
-
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd LLL yyyy (EEE)", Locale.US);
-
-    private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("h:mma", Locale.US);
 
     @NonNull
     String id;
@@ -78,13 +71,12 @@ public class Game implements Comparable<Game> {
 
     @Override
     public String toString() {
-        return String.format(DISPLAY_TEMPLATE,
+        return String.format(GAME_INFO_TEMPLATE,
                 DATE_FORMATTER.format(date),
                 TIME_FORMATTER.format(startTime).toUpperCase(),
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
-                getFormattedList(courts),
-                getBulletedList(players.stream().map(Player::getName).toList(), maxPlayers));
+                getFormattedList(courts));
     }
 
     @Override
@@ -103,44 +95,18 @@ public class Game implements Comparable<Game> {
     /**
      * Get the game details in a formatted string
      */
-    public String toDisplayString(int idx) {
+    public String getGameInfoString(int idx) {
         return String.format(GAME_ID_TEMPLATE, idx) + this;
     }
 
-    public String toInvitationString() {
-        return String.format(INVITATION_TEMPLATE,
-                maxPlayers - players.size(),
-                BADMINTON_EMOJI,
+    public String getFullGameInfoString(int idx) {
+        final String additionalGameInfo = String.format(FULL_GAME_INFO_TEMPLATE,
                 DATE_FORMATTER.format(date),
                 TIME_FORMATTER.format(startTime).toUpperCase(),
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
                 getFormattedList(courts),
-                pricePerPax,
-                maxPlayers);
-    }
-
-    private String getFormattedList(List<String> toFormat) {
-        if (toFormat == null || toFormat.isEmpty()) {
-            return "";
-        }
-        return String.join(", ", toFormat);
-    }
-
-    private String getBulletedList(List<String> items, int maxItems) {
-        if (items == null) {
-            return "";
-        }
-
-        final StringBuilder sb = new StringBuilder("\n");
-        for (int i = 1; i <= items.size(); i++) {
-            sb.append(i).append(". ").append(items.get(i - 1)).append("\n");
-        }
-
-        for (int i = items.size() + 1; i <= maxItems; i++) {
-            sb.append(i).append(".").append("\n");
-        }
-
-        return sb.toString();
+                getBulletedList(players.stream().map(Player::getName).toList(), maxPlayers));
+        return String.format(GAME_ID_TEMPLATE, idx) + additionalGameInfo;
     }
 }

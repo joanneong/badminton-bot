@@ -100,14 +100,17 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public List<Game> deleteGame(Long chatId, int index) {
-        final List<Game> savedGames = sortedGamesForChatId.get(chatId);
-        if (index > savedGames.size()) {
-            return null;
+    public boolean deleteGame(Long chatId, String gameId) {
+        final Game game = allGames.get(gameId);
+        if (game == null) {
+            return false;
         }
 
-        savedGames.remove(index - 1);
-        return savedGames;
+        allGames.remove(gameId);
+        final List<Game> games = sortedGamesForChatId.get(chatId);
+        games.remove(game);
+        gameToPlayersMap.remove(gameId);
+        return true;
     }
 
     private static void populateWithDummyData() {
