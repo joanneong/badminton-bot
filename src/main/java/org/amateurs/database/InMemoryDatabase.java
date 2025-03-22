@@ -1,10 +1,10 @@
 package org.amateurs.database;
 
 import org.amateurs.model.Game;
+import org.amateurs.model.Player;
 
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.Optional;
 public class InMemoryDatabase implements Database {
     final static Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
     final static Map<String, Game> allGames = new HashMap<>();
+    final static Map<String, List<Player>> gameToPlayersMap = new HashMap<>();
 
     private static final InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
 
@@ -32,6 +33,7 @@ public class InMemoryDatabase implements Database {
     @Override
     public List<Game> getAllGames(Long chatId) {
         List<Game> games = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
+        games.forEach(game -> game.setPlayers(gameToPlayersMap.get(game.getId())));
         Collections.sort(games);
         return games;
     }
@@ -45,7 +47,13 @@ public class InMemoryDatabase implements Database {
 
     @Override
     public Optional<Game> getGameById(String gameId) {
-        return Optional.ofNullable(allGames.get(gameId));
+        Game game = allGames.get(gameId);
+        if (game == null) {
+            return Optional.empty();
+        }
+
+        game.setPlayers(gameToPlayersMap.get(game.getId()));
+        return Optional.of(game);
     }
 
     @Override
@@ -54,6 +62,7 @@ public class InMemoryDatabase implements Database {
         savedGames.add(newGame);
         sortedGamesForChatId.put(chatId, savedGames);
         allGames.put(newGame.getId(), newGame);
+        gameToPlayersMap.put(newGame.getId(), new ArrayList<>());
         return savedGames;
     }
 
@@ -63,7 +72,9 @@ public class InMemoryDatabase implements Database {
         if (savedGame == null) {
             return null;
         }
-        savedGame.addPlayers(players);
+        List<Player> newPlayers = players.stream().map(Player::new).toList();
+        gameToPlayersMap.get(savedGame.getId()).addAll(newPlayers);
+        savedGame.setPlayers(gameToPlayersMap.get(savedGame.getId()));
         return savedGame;
     }
 
@@ -110,12 +121,14 @@ public class InMemoryDatabase implements Database {
                 .endTime(now.toLocalTime().plusHours(3))
                 .location("CCK Sports Hall")
                 .courts(List.of("1"))
-                .players(new ArrayList<>(Arrays.asList("Jojopup123".split(","))))
                 .maxPlayers(6)
                 .pricePerPax(6)
                 .build();
         dummyGames.add(dummyGame);
         sortedGamesForChatId.put(197040891L, dummyGames);
         allGames.put(dummyGameId, dummyGame);
+        final List<Player> players = new ArrayList<>();
+        players.add(new Player("Jojopup123"));
+        gameToPlayersMap.put(dummyGameId, players);
     }
 }

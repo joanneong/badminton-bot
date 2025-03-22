@@ -9,7 +9,6 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
 
@@ -64,7 +63,7 @@ public class Game implements Comparable<Game> {
     List<String> courts;
 
     @Builder.Default
-    List<String> players = new ArrayList<>();
+    List<Player> players = new ArrayList<>();
 
     int maxPlayers;
 
@@ -85,7 +84,7 @@ public class Game implements Comparable<Game> {
                 TIME_FORMATTER.format(endTime).toUpperCase(),
                 location,
                 getFormattedList(courts),
-                getBulletedList(players, maxPlayers));
+                getBulletedList(players.stream().map(Player::getName).toList(), maxPlayers));
     }
 
     @Override
@@ -119,13 +118,6 @@ public class Game implements Comparable<Game> {
                 getFormattedList(courts),
                 pricePerPax,
                 maxPlayers);
-    }
-
-    public void addPlayers(List<String> newPlayers) {
-        final Iterator<String> newPlayerIterator = newPlayers.iterator();
-        while (players.size() < maxPlayers && newPlayerIterator.hasNext()) {
-            players.add(newPlayerIterator.next());
-        }
     }
 
     private String getFormattedList(List<String> toFormat) {

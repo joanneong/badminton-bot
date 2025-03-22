@@ -23,6 +23,7 @@ public class InputToModelMapper {
         final LocalTime startTime = parseStartTimeInput(components);
         final String duration = components[AddCommandField.DURATION.getStep()];
         final String maxPlayers = components[AddCommandField.MAX_PLAYERS.getStep()];
+        final String pricePerPax = components[AddCommandField.PRICE_PER_PAX.getStep()];
 
         return Game.builder()
                 .id(gameId)
@@ -32,6 +33,7 @@ public class InputToModelMapper {
                 .startTime(startTime)
                 .endTime(startTime.plusHours(Long.parseLong(duration)))
                 .maxPlayers(Integer.parseInt(maxPlayers))
+                .pricePerPax(Integer.parseInt(pricePerPax))
                 .build();
     }
 
