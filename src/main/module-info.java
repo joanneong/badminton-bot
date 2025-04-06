@@ -8,4 +8,10 @@ module badminton.bot {
     requires telegrambots.meta;
     requires org.checkerframework.checker.qual;
     requires java.net.http;
+    requires com.fasterxml.jackson.datatype.jsr310;
+    requires com.fasterxml.jackson.databind;
+
+    // export models for jackson to access
+    exports amateurs.model;
+    exports amateurs.mapper;
 }

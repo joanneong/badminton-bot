@@ -2,10 +2,14 @@ package amateurs.database.supabase;
 
 import amateurs.database.Database;
 import amateurs.model.Game;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.net.http.HttpResponse;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -23,7 +27,22 @@ public class SupabaseDatabase implements Database {
 
     @Override
     public List<Game> getAllGames(Long chatId) {
-        HttpResponse<String> resp = client.sendRequest(GAME_TABLE, Map.of());
+        final Map<String, String> queryParams = Map.of(
+                "select", "*,court(court),player(name)",
+                "chat_id", "eq." + chatId,
+                "date", "gte." + LocalDate.now());
+        final HttpResponse<String> resp = client.sendRequest(GAME_TABLE, queryParams);
+        ObjectMapper om = new ObjectMapper();
+        om.registerModule(new JavaTimeModule());
+
+        try {
+            List<Game> g = om.readValue(resp.body(), new TypeReference<>() {});
+            for (Game gg : g) {
+                LOG.info(gg.getFullGameInfoString());
+            }
+        } catch (Exception e) {
+            LOG.error(e);
+        }
         LOG.info(resp.body());
         return List.of();
     }

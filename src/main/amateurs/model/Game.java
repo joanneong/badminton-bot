@@ -1,7 +1,13 @@
 package amateurs.model;
 
+import amateurs.mapper.GameCourtDeserializer;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 
@@ -17,6 +23,9 @@ import static amateurs.util.StringDisplayUtil.getFormattedList;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Game implements Comparable<Game> {
     private static final String GAME_ID_TEMPLATE = """
             <u><b>Game %d</b></u>
@@ -43,23 +52,30 @@ public class Game implements Comparable<Game> {
     @NonNull
     LocalDate date;
 
+    @JsonProperty("start_time")
     @NonNull
     LocalTime startTime;
 
+    @JsonProperty("end_time")
     @NonNull
     LocalTime endTime;
 
     @NonNull
     String location;
 
+    @JsonProperty("court")
+    @JsonDeserialize(using= GameCourtDeserializer.class)
     @NonNull
     List<String> courts;
 
+    @JsonProperty("player")
     @Builder.Default
     List<Player> players = new ArrayList<>();
 
+    @JsonProperty("max_players")
     int maxPlayers;
 
+    @JsonProperty("price_per_pax")
     int pricePerPax;
 
     @Override

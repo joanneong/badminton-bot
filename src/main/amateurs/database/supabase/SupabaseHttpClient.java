@@ -40,7 +40,7 @@ public class SupabaseHttpClient {
                 .map(query -> query.getKey() + "=" + query.getValue())
                 .reduce((a, b) -> a + "&" + b);
         if (fullQueryParams.isPresent()) {
-            url += fullQueryParams.get();
+            url += "?" + fullQueryParams.get();
         }
 
         final HttpRequest req = HttpRequest.newBuilder()
@@ -48,11 +48,13 @@ public class SupabaseHttpClient {
                 .uri(create(url))
                 .build();
 
+        LOG.info("Full request: {}", req);
+
         try {
             return httpClient.send(req, HttpResponse.BodyHandlers.ofString());
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            throw new RuntimeException("Error sending request to SupaBase! %s", e);
+            throw new RuntimeException("Error sending request to Supabase! %s", e);
         }
     }
 }
