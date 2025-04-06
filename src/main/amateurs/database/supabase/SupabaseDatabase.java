@@ -48,32 +48,21 @@ public class SupabaseDatabase implements Database {
     }
 
     @Override
-    public List<String> getAllGameIds(Long chatId) {
-        return List.of();
-    }
-
-    @Override
-    public Optional<Game> getGameById(String gameId) {
+    public Optional<Game> getGameById(Long gameId) {
         return Optional.empty();
     }
 
     @Override
-    public List<Game> addGame(Long chatId, Game newGame) {
-        return List.of();
+    public void addGame(Long chatId, Game newGame) {
     }
 
     @Override
-    public Game addPlayersToGame(String gameId, List<String> players) {
+    public Game addPlayersToGame(Long gameId, List<String> players) {
         return null;
     }
 
     @Override
-    public List<Game> editGame(Long chatId, int index, Game editedGame) {
-        return List.of();
-    }
-
-    @Override
-    public boolean deleteGame(Long chatId, String gameId) {
+    public boolean deleteGame(Long chatId, Long gameId) {
         return false;
     }
 }

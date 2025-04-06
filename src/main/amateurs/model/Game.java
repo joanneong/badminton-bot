@@ -46,8 +46,7 @@ public class Game implements Comparable<Game> {
             <b>Players(s):</b> %s
             """;
 
-    @NonNull
-    String id;
+    Long id;
 
     @NonNull
     LocalDate date;

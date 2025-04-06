@@ -37,7 +37,6 @@ public class InviteCommandExecutor implements CommandExecutor {
             <b>Date:</b> %s
             <b>Time:</b> %s to %s
             <b>Location:</b> %s
-            <b>Court(s):</b> %s
             <b>Price/pax:</b> $%d
             <b>Max players:</b> %d
             """;
@@ -63,7 +62,7 @@ public class InviteCommandExecutor implements CommandExecutor {
         }
 
         final String invitation = generateMessageWithGameInfo(INVITE_TEMPLATE, allGames);
-        final List<String> gameIds = allGames.stream().map(Game::getId).toList();
+        final List<Long> gameIds = allGames.stream().map(Game::getId).toList();
         final InlineKeyboardMarkup keyboard =
                 generateKeyboardForGames(INVITE_COMMAND, gameIds, true, String.valueOf(chatId));
         chatClient.sendMenu(chatId, invitation, keyboard);
@@ -77,14 +76,16 @@ public class InviteCommandExecutor implements CommandExecutor {
 
         final String[] callbackComponents = callbackData.split(COMMAND_DELIMITER);
 
-        if (callbackComponents.length == 2) {
+        if (callbackComponents.length == 1) {
+            executeCommand(chatId);
+        } else if (callbackComponents.length == 2) {
             if (callbackComponents[1].equals(String.valueOf(chatId))) {
                 final List<Game> allGames = database.getAllGames(chatId);
                 for (Game game : allGames) {
                     chatClient.sendText(chatId, generateGameInvitation(game));
                 }
             } else {
-                final Optional<Game> game = database.getGameById(callbackComponents[1]);
+                final Optional<Game> game = database.getGameById(Long.valueOf(callbackComponents[1]));
                 if (game.isEmpty()) {
                     throw new IllegalArgumentException("Game does not exist!");
                 }
@@ -102,7 +103,6 @@ public class InviteCommandExecutor implements CommandExecutor {
                 TIME_FORMATTER.format(game.getStartTime()).toUpperCase(),
                 TIME_FORMATTER.format(game.getEndTime()).toUpperCase(),
                 game.getLocation(),
-                getFormattedList(game.getCourts()),
                 game.getPricePerPax(),
                 game.getMaxPlayers());
     }

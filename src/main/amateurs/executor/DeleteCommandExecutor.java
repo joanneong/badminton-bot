@@ -55,7 +55,7 @@ public class DeleteCommandExecutor implements CommandExecutor{
         }
 
         final String invitation = generateMessageWithGameInfo(DELETE_TEMPLATE, allGames);
-        final List<String> gameIds = allGames.stream().map(Game::getId).toList();
+        final List<Long> gameIds = allGames.stream().map(Game::getId).toList();
         final InlineKeyboardMarkup keyboard = generateKeyboardForGames(DELETE_COMMAND, gameIds);
         chatClient.sendMenu(chatId, invitation, keyboard);
     }
@@ -68,8 +68,10 @@ public class DeleteCommandExecutor implements CommandExecutor{
 
         final String[] callbackComponents = callbackData.split(COMMAND_DELIMITER);
 
-        if (callbackComponents.length == 2) {
-            boolean isGameDeleted = database.deleteGame(chatId, callbackComponents[1]);
+        if (callbackComponents.length == 1) {
+            executeCommand(chatId);
+        } else if (callbackComponents.length == 2) {
+            boolean isGameDeleted = database.deleteGame(chatId, Long.valueOf(callbackComponents[1]));
             final String returnMsg = isGameDeleted ? DELETE_SUCCESS : DELETE_FAILURE;
             chatClient.sendText(chatId, returnMsg);
         }

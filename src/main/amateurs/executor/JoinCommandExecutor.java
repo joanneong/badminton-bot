@@ -79,7 +79,7 @@ public class JoinCommandExecutor implements CommandExecutor {
         }
 
         final String joinMsg = generateMessageWithGameInfo(JOIN_TEMPLATE, allGames);
-        final List<String> gameIds = allGames.stream().map(Game::getId).toList();
+        final List<Long> gameIds = allGames.stream().map(Game::getId).toList();
         final InlineKeyboardMarkup keyboard = generateKeyboardForGames(JOIN_COMMAND, gameIds);
         chatClient.sendMenu(chatId, joinMsg, keyboard);
     }
@@ -102,7 +102,7 @@ public class JoinCommandExecutor implements CommandExecutor {
         LOG.info("Executing command with params for chatId={} and params={}", chatId, params);
         validateParams(params);
 
-        final String gameId = params.split(COMMAND_DELIMITER)[1];
+        final Long gameId = Long.valueOf(params.split(COMMAND_DELIMITER)[1]);
         final List<String> players = Arrays.stream(params.split(COMMAND_DELIMITER)[2].split(",")).toList();
         final Game updatedGame = database.addPlayersToGame(gameId, players);
 

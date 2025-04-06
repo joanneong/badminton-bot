@@ -10,11 +10,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 
 public class InMemoryDatabase implements Database {
     final static Map<Long, List<Game>> sortedGamesForChatId = new HashMap<>();
-    final static Map<String, Game> allGames = new HashMap<>();
-    final static Map<String, List<Player>> gameToPlayersMap = new HashMap<>();
+    final static Map<Long, Game> allGames = new HashMap<>();
+    final static Map<Long, List<Player>> gameToPlayersMap = new HashMap<>();
 
     private static final InMemoryDatabase inMemoryDatabase = new InMemoryDatabase();
 
@@ -39,14 +40,7 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public List<String> getAllGameIds(Long chatId) {
-        List<Game> games = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
-        Collections.sort(games);
-        return games.stream().map(Game::getId).toList();
-    }
-
-    @Override
-    public Optional<Game> getGameById(String gameId) {
+    public Optional<Game> getGameById(Long gameId) {
         Game game = allGames.get(gameId);
         if (game == null) {
             return Optional.empty();
@@ -57,17 +51,18 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public List<Game> addGame(Long chatId, Game newGame) {
+    public void addGame(Long chatId, Game newGame) {
         final List<Game> savedGames = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
+        final Random random = new Random();
+        newGame.setId(random.nextLong(1L, 9999L));
         savedGames.add(newGame);
         sortedGamesForChatId.put(chatId, savedGames);
         allGames.put(newGame.getId(), newGame);
         gameToPlayersMap.put(newGame.getId(), new ArrayList<>());
-        return savedGames;
     }
 
     @Override
-    public Game addPlayersToGame(String gameId, List<String> players) {
+    public Game addPlayersToGame(Long gameId, List<String> players) {
         Game savedGame = allGames.get(gameId);
         if (savedGame == null) {
             return null;
@@ -79,28 +74,7 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public List<Game> editGame(Long chatId, int index, Game editedGame) {
-        if (sortedGamesForChatId.get(chatId) == null) {
-            return null;
-        }
-
-        final List<Game> savedGames = sortedGamesForChatId.get(chatId);
-        if (index > savedGames.size()) {
-            return null;
-        }
-
-        final Game gameToEdit = savedGames.get(index - 1);
-        gameToEdit.setDate(editedGame.getDate());
-        gameToEdit.setStartTime(editedGame.getStartTime());
-        gameToEdit.setEndTime(editedGame.getEndTime());
-        gameToEdit.setLocation(editedGame.getLocation());
-        gameToEdit.setCourts(editedGame.getCourts());
-        gameToEdit.setPlayers(editedGame.getPlayers());
-        return sortedGamesForChatId.get(chatId);
-    }
-
-    @Override
-    public boolean deleteGame(Long chatId, String gameId) {
+    public boolean deleteGame(Long chatId, Long gameId) {
         final Game game = allGames.get(gameId);
         if (game == null) {
             return false;
@@ -116,7 +90,7 @@ public class InMemoryDatabase implements Database {
     private static void populateWithDummyData() {
         final ZonedDateTime now = ZonedDateTime.now();
         final List<Game> dummyGames = new ArrayList<>();
-        final String dummyGameId = "someDummyGameId";
+        final Long dummyGameId = 1L;
         final Game dummyGame = Game.builder()
                 .id(dummyGameId)
                 .date(now.toLocalDate().plusDays(3))

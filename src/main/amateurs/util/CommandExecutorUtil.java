@@ -35,7 +35,7 @@ public class CommandExecutorUtil {
      * @param gameIds           list of ids for all available games
      * @return                  inline keyboard with options for each game
      */
-    public static InlineKeyboardMarkup generateKeyboardForGames(Command command, List<String> gameIds) {
+    public static InlineKeyboardMarkup generateKeyboardForGames(Command command, List<Long> gameIds) {
         return generateKeyboardForGames(command, gameIds, false, null);
     }
 
@@ -47,13 +47,13 @@ public class CommandExecutorUtil {
      * @param allGamesOptionCallback callback data for all games option
      * @return                  inline keyboard with options for each game
      */
-    public static InlineKeyboardMarkup generateKeyboardForGames(Command command, List<String> gameIds,
+    public static InlineKeyboardMarkup generateKeyboardForGames(Command command, List<Long> gameIds,
                                                                boolean hasAllGamesOption, String allGamesOptionCallback) {
         final List<String> gameNames = new ArrayList<>();
         final List<String> gameIdCallbacks = new ArrayList<>();
         for (int i = 0; i < gameIds.size(); i++) {
             gameNames.add(String.format("Game %d", i + 1));
-            gameIdCallbacks.add(String.join(COMMAND_DELIMITER, command.getCommand(), gameIds.get(i)));
+            gameIdCallbacks.add(String.join(COMMAND_DELIMITER, command.getCommand(), String.valueOf(gameIds.get(i))));
         }
 
         if (hasAllGamesOption && gameIds.size() > 1) {
@@ -62,7 +62,7 @@ public class CommandExecutorUtil {
             }
 
             gameNames.add("All games");
-            gameIds.add(String.join(COMMAND_DELIMITER, command.getCommand(), allGamesOptionCallback));
+            gameIdCallbacks.add(String.join(COMMAND_DELIMITER, command.getCommand(), allGamesOptionCallback));
         }
 
         return buildOptionsKeyboard(gameNames, gameIdCallbacks, 3);
