@@ -10,6 +10,7 @@ module badminton.bot {
     requires java.net.http;
     requires com.fasterxml.jackson.datatype.jsr310;
     requires com.fasterxml.jackson.databind;
+    requires java.xml;
 
     // export models for jackson to access
     exports amateurs.model;

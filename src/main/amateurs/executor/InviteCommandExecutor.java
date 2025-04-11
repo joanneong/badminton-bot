@@ -85,7 +85,7 @@ public class InviteCommandExecutor implements CommandExecutor {
                     chatClient.sendText(chatId, generateGameInvitation(game));
                 }
             } else {
-                final Optional<Game> game = database.getGameById(Long.valueOf(callbackComponents[1]));
+                final Optional<Game> game = database.getGameById(chatId, Long.valueOf(callbackComponents[1]));
                 if (game.isEmpty()) {
                     throw new IllegalArgumentException("Game does not exist!");
                 }

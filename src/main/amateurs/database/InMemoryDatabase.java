@@ -40,7 +40,7 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public Optional<Game> getGameById(Long gameId) {
+    public Optional<Game> getGameById(Long chatId, Long gameId) {
         Game game = allGames.get(gameId);
         if (game == null) {
             return Optional.empty();

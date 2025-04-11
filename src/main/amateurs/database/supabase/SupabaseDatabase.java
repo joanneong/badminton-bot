@@ -19,7 +19,13 @@ public class SupabaseDatabase implements Database {
 
     private static final String GAME_TABLE = "game";
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     private final SupabaseHttpClient client;
+
+    static {
+        objectMapper.registerModule(new JavaTimeModule());
+    }
 
     public SupabaseDatabase() {
         this.client = SupabaseHttpClient.getInstance();
@@ -31,24 +37,13 @@ public class SupabaseDatabase implements Database {
                 "select", "*,court(court),player(name)",
                 "chat_id", "eq." + chatId,
                 "date", "gte." + LocalDate.now());
-        final HttpResponse<String> resp = client.sendRequest(GAME_TABLE, queryParams);
-        ObjectMapper om = new ObjectMapper();
-        om.registerModule(new JavaTimeModule());
-
-        try {
-            List<Game> g = om.readValue(resp.body(), new TypeReference<>() {});
-            for (Game gg : g) {
-                LOG.info(gg.getFullGameInfoString());
-            }
-        } catch (Exception e) {
-            LOG.error(e);
-        }
-        LOG.info(resp.body());
-        return List.of();
+        final Optional<List<Game>> allGames = getGameWithQuery(queryParams);
+        return allGames.orElse(List.of());
     }
 
     @Override
-    public Optional<Game> getGameById(Long gameId) {
+    public Optional<Game> getGameById(Long chatId, Long gameId) {
+        checkIsValidGameOwnedByChat(chatId, gameId);
         return Optional.empty();
     }
 
@@ -63,6 +58,36 @@ public class SupabaseDatabase implements Database {
 
     @Override
     public boolean deleteGame(Long chatId, Long gameId) {
+        checkIsValidGameOwnedByChat(chatId, gameId);
         return false;
+    }
+
+    /**
+     * Checks that:
+     * 1. game is associated with the chat id
+     * 2. game is scheduled for the future
+     * @param chatId        unique id for the chat
+     * @param gameId        unique id for the game
+     */
+    private void checkIsValidGameOwnedByChat(Long chatId, Long gameId) {
+        final Map<String, String> queryParams = Map.of(
+                "select", "id",
+                "id", "eq." + gameId,
+                "chat_id", "eq." + chatId,
+                "date", "gte." + LocalDate.now());
+        final Optional<List<Game>> game = getGameWithQuery(queryParams);
+        if (game.isEmpty() || game.get().isEmpty()) {
+            throw new RuntimeException(String.format("Game with id=%d is not valid for chat with id=%d!", gameId, chatId));
+        }
+    }
+
+    private Optional<List<Game>> getGameWithQuery(Map<String, String> queryParams) {
+        try {
+            final HttpResponse<String> resp = client.sendRequest(GAME_TABLE, queryParams);
+            return Optional.of(objectMapper.readValue(resp.body(), new TypeReference<>() {}));
+        } catch (Exception e) {
+            LOG.error(e); // TODO: better error handling
+        }
+        return Optional.empty();
     }
 }

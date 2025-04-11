@@ -15,10 +15,11 @@ public interface Database {
 
     /**
      * Gets a game by its id
+     * @param chatId        unique id of chat requesting for the game info
      * @param gameId        unique id of a game
      * @return              game associated with this id
      */
-    Optional<Game> getGameById(Long gameId);
+    Optional<Game> getGameById(Long chatId, Long gameId);
 
     /**
      * Add a new game and associate it with a chat id
