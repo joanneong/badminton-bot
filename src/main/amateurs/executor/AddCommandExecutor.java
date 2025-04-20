@@ -105,6 +105,7 @@ public class AddCommandExecutor implements CommandExecutor {
 
     private void processTerminalField(Long chatId, int msgId, String data) {
         final Game game = mapInputToGame(data);
+        game.setChatId(chatId);
         database.addGame(chatId, game);
         chatClient.editMessageWithMenu(chatId, msgId, game.toString(), null);
     }

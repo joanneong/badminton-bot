@@ -1,6 +1,9 @@
 package amateurs.model;
 
 import amateurs.mapper.GameCourtDeserializer;
+import com.fasterxml.jackson.annotation.JsonFilter;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -26,6 +29,7 @@ import static amateurs.util.StringDisplayUtil.getFormattedList;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonFilter("supbaseGameFilter")
 public class Game implements Comparable<Game> {
     private static final String GAME_ID_TEMPLATE = """
             <u><b>Game %d</b></u>
@@ -48,12 +52,19 @@ public class Game implements Comparable<Game> {
 
     Long id;
 
+    @JsonProperty("chat_id")
+    Long chatId;
+
+    @JsonFormat(pattern="yyyy-MM-dd")
     @NonNull
     LocalDate date;
 
+    @JsonFormat(pattern="HH:mm:ss")
     @JsonProperty("start_time")
     @NonNull
     LocalTime startTime;
+
+    @JsonFormat(pattern="HH:mm:ss")
 
     @JsonProperty("end_time")
     @NonNull
@@ -115,6 +126,7 @@ public class Game implements Comparable<Game> {
         return String.format(GAME_ID_TEMPLATE, idx) + getFullGameInfoString();
     }
 
+    @JsonIgnore
     public String getFullGameInfoString() {
         return String.format(FULL_GAME_INFO_TEMPLATE,
                 DATE_FORMATTER.format(date),

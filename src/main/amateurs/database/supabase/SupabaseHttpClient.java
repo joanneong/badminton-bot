@@ -1,5 +1,6 @@
 package amateurs.database.supabase;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -34,15 +35,8 @@ public class SupabaseHttpClient {
         return supabaseClient;
     }
 
-    public HttpResponse<String> sendRequest(String tableName, Map<String, String> queryParams) {
-        String url = String.format(SUPABASE_URL_TEMPLATE, SUPABASE_PROJECT_ID, tableName);
-        final Optional<String> fullQueryParams = queryParams.entrySet().stream()
-                .map(query -> query.getKey() + "=" + query.getValue())
-                .reduce((a, b) -> a + "&" + b);
-        if (fullQueryParams.isPresent()) {
-            url += "?" + fullQueryParams.get();
-        }
-
+    public HttpResponse<String> sendGetRequest(String tableName, Map<String, String> queryParams) {
+        final String url = constructFullUrl(tableName, queryParams);
         final HttpRequest req = HttpRequest.newBuilder()
                 .setHeader(SUPABASE_API_KEY_HEADER, SUPABASE_API_KEY)
                 .uri(create(url))
@@ -56,5 +50,57 @@ public class SupabaseHttpClient {
             LOG.error(e.getMessage());
             throw new RuntimeException("Error sending request to Supabase! %s", e);
         }
+    }
+
+    public HttpResponse<String> sendPostRequest(String tableName, String jsonData) {
+        final String url = String.format(SUPABASE_URL_TEMPLATE, SUPABASE_PROJECT_ID, tableName);
+        try {
+            final HttpRequest req = HttpRequest.newBuilder()
+                    .setHeader(SUPABASE_API_KEY_HEADER, SUPABASE_API_KEY)
+                    .uri(create(url))
+                    .header("Content-Type", "application/json")
+                    .header("Prefer", "return=representation")
+                    .POST(HttpRequest.BodyPublishers.ofString(jsonData))
+                    .build();
+
+            LOG.info("Full request: {}", req);
+
+            return httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+        } catch (JsonProcessingException jpe) {
+            LOG.error(jpe.getMessage());
+            throw new RuntimeException("Error processing data for post request! %s", jpe);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException("Error sending request to Supabase! %s", e);
+        }
+    }
+
+    public HttpResponse<String> sendDeleteRequest(String tableName, Map<String, String> queryParams) {
+        final String url = constructFullUrl(tableName, queryParams);
+        final HttpRequest req = HttpRequest.newBuilder()
+                .setHeader(SUPABASE_API_KEY_HEADER, SUPABASE_API_KEY)
+                .uri(create(url))
+                .DELETE()
+                .build();
+
+        LOG.info("Full request: {}", req);
+
+        try {
+            return httpClient.send(req, HttpResponse.BodyHandlers.ofString());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException("Error sending request to Supabase! %s", e);
+        }
+    }
+
+    private String constructFullUrl(String tableName, Map<String, String> queryParams) {
+        String url = String.format(SUPABASE_URL_TEMPLATE, SUPABASE_PROJECT_ID, tableName);
+        final Optional<String> fullQueryParams = queryParams.entrySet().stream()
+                .map(query -> query.getKey() + "=" + query.getValue())
+                .reduce((a, b) -> a + "&" + b);
+        if (fullQueryParams.isPresent()) {
+            url += "?" + fullQueryParams.get();
+        }
+        return url;
     }
 }

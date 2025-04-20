@@ -59,6 +59,11 @@ public class SupabaseDatabaseTest {
         assertThrows(RuntimeException.class, () -> database.getGameById(0L, TEST_GAME_ID));
     }
 
+    @Test
+    public void testAddGame() {
+
+    }
+
     private void assertGameFieldsArePresent(Game game) {
         assertNotNull(game.getId());
         assertNotNull(game.getDate());

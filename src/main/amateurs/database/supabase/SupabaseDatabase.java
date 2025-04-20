@@ -1,9 +1,13 @@
 package amateurs.database.supabase;
 
 import amateurs.database.Database;
+import amateurs.model.Court;
 import amateurs.model.Game;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,6 +23,8 @@ public class SupabaseDatabase implements Database {
     private static final Logger LOG = LogManager.getLogger();
 
     private static final String GAME_TABLE = "game";
+
+    private static final String COURT_TABLE = "court";
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -53,7 +59,8 @@ public class SupabaseDatabase implements Database {
 
     @Override
     public void addGame(Long chatId, Game newGame) {
-
+        final Game savedGame = insertGame(newGame);
+        insertCourts(savedGame.getId(), newGame.getCourts());
     }
 
     @Override
@@ -64,7 +71,9 @@ public class SupabaseDatabase implements Database {
     @Override
     public boolean deleteGame(Long chatId, Long gameId) {
         checkIsValidGameOwnedByChat(chatId, gameId);
-        return false;
+        final Map<String, String> queryParams = Map.of("id", "eq." + gameId);
+        client.sendDeleteRequest(GAME_TABLE, queryParams);
+        return true;
     }
 
     /**
@@ -89,11 +98,39 @@ public class SupabaseDatabase implements Database {
 
     private Optional<List<Game>> getGamesWithQuery(Map<String, String> queryParams) {
         try {
-            final HttpResponse<String> resp = client.sendRequest(GAME_TABLE, queryParams);
+            final HttpResponse<String> resp = client.sendGetRequest(GAME_TABLE, queryParams);
             return Optional.of(objectMapper.readValue(resp.body(), new TypeReference<>() {}));
         } catch (Exception e) {
             LOG.error(e); // TODO: better error handling
         }
         return Optional.empty();
+    }
+
+    private Game insertGame(Game game) {
+        try {
+            final FilterProvider gameFilter = new SimpleFilterProvider()
+                    .addFilter("supbaseGameFilter",
+                            SimpleBeanPropertyFilter.serializeAllExcept("id", "court", "player"));
+            final HttpResponse<String> resp = client.sendPostRequest(GAME_TABLE, objectMapper.writer(gameFilter).writeValueAsString(game));
+            final List<Game> savedGames = objectMapper.readValue(resp.body(), new TypeReference<>() {});
+            return savedGames.getFirst();
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException("Error inserting game!", e);
+        }
+    }
+
+    private void insertCourts(Long gameId, List<String> gameCourts) {
+        try {
+            final List<Court> courts = gameCourts.stream()
+                    .map(court -> new Court(gameId, court))
+                    .toList();
+            final FilterProvider courtFilter = new SimpleFilterProvider()
+                    .addFilter("supbaseCourtFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
+            client.sendPostRequest(COURT_TABLE, objectMapper.writer(courtFilter).writeValueAsString(courts));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            throw new RuntimeException("Error inserting game court(s)!", e);
+        }
     }
 }
