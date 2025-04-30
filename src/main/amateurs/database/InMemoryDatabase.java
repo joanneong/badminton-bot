@@ -51,7 +51,7 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public void addGame(Long chatId, Game newGame) {
+    public Game addGame(Long chatId, Game newGame) {
         final List<Game> savedGames = sortedGamesForChatId.getOrDefault(chatId, new ArrayList<>());
         final Random random = new Random();
         newGame.setId(random.nextLong(1L, 9999L));
@@ -59,6 +59,7 @@ public class InMemoryDatabase implements Database {
         sortedGamesForChatId.put(chatId, savedGames);
         allGames.put(newGame.getId(), newGame);
         gameToPlayersMap.put(newGame.getId(), new ArrayList<>());
+        return newGame;
     }
 
     @Override

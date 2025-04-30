@@ -26,22 +26,35 @@ public class SupabaseDatabase implements Database {
 
     private static final String COURT_TABLE = "court";
 
-    private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static final String PLAYER_TABLE = "player";
+
+    private final ObjectMapper objectMapper;
 
     private final SupabaseHttpClient client;
 
-    static {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+    private final String gameTable;
+
+    private final String courtTable;
+
+    private final String playerTable;
 
     public SupabaseDatabase() {
+        this(GAME_TABLE, COURT_TABLE, PLAYER_TABLE, new ObjectMapper());
+    }
+
+    public SupabaseDatabase(String gameTable, String courtTable, String playerTable, ObjectMapper objectMapper) {
         this.client = SupabaseHttpClient.getInstance();
+        this.gameTable = gameTable;
+        this.courtTable = courtTable;
+        this.playerTable = playerTable;
+        this.objectMapper = objectMapper;
+        objectMapper.registerModule(new JavaTimeModule());
     }
 
     @Override
     public List<Game> getAllGames(Long chatId) {
         final Map<String, String> queryParams = Map.of(
-                "select", "*,court(court),player(name)",
+                "select", String.format("*,%s(court):court,%s(name):player", courtTable, playerTable),
                 "chat_id", "eq." + chatId,
                 "date", "gte." + LocalDate.now());
         final Optional<List<Game>> allGames = getGamesWithQuery(queryParams);
@@ -58,9 +71,10 @@ public class SupabaseDatabase implements Database {
     }
 
     @Override
-    public void addGame(Long chatId, Game newGame) {
+    public Game addGame(Long chatId, Game newGame) {
         final Game savedGame = insertGame(newGame);
         insertCourts(savedGame.getId(), newGame.getCourts());
+        return savedGame;
     }
 
     @Override
@@ -72,7 +86,7 @@ public class SupabaseDatabase implements Database {
     public boolean deleteGame(Long chatId, Long gameId) {
         checkIsValidGameOwnedByChat(chatId, gameId);
         final Map<String, String> queryParams = Map.of("id", "eq." + gameId);
-        client.sendDeleteRequest(GAME_TABLE, queryParams);
+        client.sendDeleteRequest(gameTable, queryParams);
         return true;
     }
 
@@ -85,7 +99,7 @@ public class SupabaseDatabase implements Database {
      */
     private Optional<List<Game>> checkIsValidGameOwnedByChat(Long chatId, Long gameId) {
         final Map<String, String> queryParams = Map.of(
-                "select", "*,court(court),player(name)",
+                "select", String.format("*,%s(court),%s(name)", courtTable, playerTable),
                 "id", "eq." + gameId,
                 "chat_id", "eq." + chatId,
                 "date", "gte." + LocalDate.now());
@@ -98,7 +112,7 @@ public class SupabaseDatabase implements Database {
 
     private Optional<List<Game>> getGamesWithQuery(Map<String, String> queryParams) {
         try {
-            final HttpResponse<String> resp = client.sendGetRequest(GAME_TABLE, queryParams);
+            final HttpResponse<String> resp = client.sendGetRequest(gameTable, queryParams);
             return Optional.of(objectMapper.readValue(resp.body(), new TypeReference<>() {}));
         } catch (Exception e) {
             LOG.error(e); // TODO: better error handling
@@ -111,7 +125,7 @@ public class SupabaseDatabase implements Database {
             final FilterProvider gameFilter = new SimpleFilterProvider()
                     .addFilter("supbaseGameFilter",
                             SimpleBeanPropertyFilter.serializeAllExcept("id", "court", "player"));
-            final HttpResponse<String> resp = client.sendPostRequest(GAME_TABLE, objectMapper.writer(gameFilter).writeValueAsString(game));
+            final HttpResponse<String> resp = client.sendPostRequest(gameTable, objectMapper.writer(gameFilter).writeValueAsString(game));
             final List<Game> savedGames = objectMapper.readValue(resp.body(), new TypeReference<>() {});
             return savedGames.getFirst();
         } catch (Exception e) {
@@ -126,8 +140,8 @@ public class SupabaseDatabase implements Database {
                     .map(court -> new Court(gameId, court))
                     .toList();
             final FilterProvider courtFilter = new SimpleFilterProvider()
-                    .addFilter("supbaseCourtFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
-            client.sendPostRequest(COURT_TABLE, objectMapper.writer(courtFilter).writeValueAsString(courts));
+                    .addFilter("supabaseCourtFilter", SimpleBeanPropertyFilter.serializeAllExcept("id"));
+            client.sendPostRequest(courtTable, objectMapper.writer(courtFilter).writeValueAsString(courts));
         } catch (Exception e) {
             LOG.error(e.getMessage());
             throw new RuntimeException("Error inserting game court(s)!", e);

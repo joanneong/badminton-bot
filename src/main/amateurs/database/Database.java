@@ -25,8 +25,9 @@ public interface Database {
      * Add a new game and associate it with a chat id
      * @param chatId        chat id of the chat (individual or group)
      * @param newGame       details of the new game
+     * @return              game saved in the database
      */
-    void addGame(Long chatId, Game newGame);
+    Game addGame(Long chatId, Game newGame);
 
     /**
      * Add players to a game with a game id

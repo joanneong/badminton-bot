@@ -88,6 +88,18 @@ public class Game implements Comparable<Game> {
     @JsonProperty("price_per_pax")
     int pricePerPax;
 
+    // These getters/setters are needed to support integration test which have a different JsonProperty
+    @NotNull
+    @JsonProperty("court")
+    public List<String> getCourts() {
+        return courts;
+    }
+
+    @JsonProperty("court")
+    public void setCourts(@NotNull List<String> courts) {
+        this.courts = courts;
+    }
+
     @Override
     public int compareTo(@NotNull Game otherGame) {
         return this.date.isEqual(otherGame.getDate())

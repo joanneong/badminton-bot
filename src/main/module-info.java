@@ -13,6 +13,6 @@ module badminton.bot {
     requires java.xml;
 
     // export models for jackson to access
-    exports amateurs.model;
+    opens amateurs.model to com.fasterxml.jackson.databind;
     exports amateurs.mapper;
 }
