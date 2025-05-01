@@ -1,13 +1,10 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
-import amateurs.database.Database;
-import amateurs.database.InMemoryDatabase;
 import amateurs.model.Game;
 
 import java.util.List;
 
-public class ListCommandExecutor implements CommandExecutor {
+public class ListCommandExecutor extends BaseCommandExecutor implements CommandExecutor {
     private static final String LIST_TEMPLATE = """
             Here are all your upcoming games:
             """;
@@ -16,13 +13,8 @@ public class ListCommandExecutor implements CommandExecutor {
             You do not have any upcoming games :( How can???
             """;
 
-    private final Database database;
-
-    private final ChatClient chatClient;
-
     public ListCommandExecutor() {
-        this.database = InMemoryDatabase.getInstance();
-        this.chatClient = ChatClient.getInstance();
+        super();
     }
 
     @Override

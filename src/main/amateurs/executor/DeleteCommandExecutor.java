@@ -1,8 +1,5 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
-import amateurs.database.Database;
-import amateurs.database.InMemoryDatabase;
 import amateurs.model.Game;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,7 +18,7 @@ import static amateurs.util.CommandExecutorUtil.generateMessageWithGameInfo;
  * 1. /delete - get keyboard to indicate which game to delete
  * 2. /delete:{gameId} - delete game
  */
-public class DeleteCommandExecutor implements CommandExecutor{
+public class DeleteCommandExecutor extends BaseCommandExecutor implements CommandExecutor{
     private static final String DELETE_TEMPLATE = """
             Which game do you want to delete?
             """;
@@ -34,15 +31,10 @@ public class DeleteCommandExecutor implements CommandExecutor{
             Your game was not deleted as it does not exist! Please try again with /delete.
             """;
 
-    private final ChatClient chatClient;
-
-    private final Database database;
-
     private static final Logger LOG = LogManager.getLogger();
 
     public DeleteCommandExecutor() {
-        this.chatClient = ChatClient.getInstance();
-        this.database = InMemoryDatabase.getInstance();
+        super();
     }
 
     @Override

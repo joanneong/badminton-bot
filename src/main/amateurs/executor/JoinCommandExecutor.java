@@ -1,8 +1,5 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
-import amateurs.database.Database;
-import amateurs.database.InMemoryDatabase;
 import amateurs.model.Game;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,7 +17,7 @@ import static amateurs.util.CommandExecutorUtil.generateMessageWithGameInfo;
  * Adds players to a game by constructing a Game string with this format:
  * /join:{gameId}:{players}
  */
-public class JoinCommandExecutor implements CommandExecutor {
+public class JoinCommandExecutor extends BaseCommandExecutor implements CommandExecutor {
     public static final String JOIN_TEMPLATE = """
             Which game would you like to join players to?
             """;
@@ -58,15 +55,10 @@ public class JoinCommandExecutor implements CommandExecutor {
             This game does not exist. Please try again with the /join command.
             """;
 
-    private final ChatClient chatClient;
-
-    private final Database database;
-
     private static final Logger LOG = LogManager.getLogger();
 
     public JoinCommandExecutor() {
-        this.chatClient = ChatClient.getInstance();
-        this.database = InMemoryDatabase.getInstance();
+        super();
     }
 
     @Override
@@ -104,7 +96,7 @@ public class JoinCommandExecutor implements CommandExecutor {
 
         final Long gameId = Long.valueOf(params.split(COMMAND_DELIMITER)[1]);
         final List<String> players = Arrays.stream(params.split(COMMAND_DELIMITER)[2].split(",")).toList();
-        final Game updatedGame = database.addPlayersToGame(gameId, players);
+        final Game updatedGame = database.addPlayersToGame(chatId, gameId, players);
 
         // If game is not found
         if (updatedGame == null) {

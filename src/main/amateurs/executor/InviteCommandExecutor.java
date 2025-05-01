@@ -1,8 +1,5 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
-import amateurs.database.Database;
-import amateurs.database.InMemoryDatabase;
 import amateurs.model.Game;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,7 +23,7 @@ import static amateurs.util.StringDisplayUtil.getFormattedList;
  * 1. /invite - get general template to ask about what games to invite for
  * 2. /invite:{gameId} - create invitation(s)
  */
-public class InviteCommandExecutor implements CommandExecutor {
+public class InviteCommandExecutor extends BaseCommandExecutor implements CommandExecutor {
     private static final String INVITE_TEMPLATE = """
             Which game(s) do you want to prepare an invite for?
             """;
@@ -41,15 +38,10 @@ public class InviteCommandExecutor implements CommandExecutor {
             <b>Max players:</b> %d
             """;
 
-    private final ChatClient chatClient;
-
-    private final Database database;
-
     private static final Logger LOG = LogManager.getLogger();
 
     public InviteCommandExecutor() {
-        this.chatClient = ChatClient.getInstance();
-        this.database = InMemoryDatabase.getInstance();
+        super();
     }
 
     @Override

@@ -1,9 +1,6 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
 import amateurs.database.CommandDataCache;
-import amateurs.database.Database;
-import amateurs.database.InMemoryDatabase;
 import amateurs.database.InMemoryCommandDataCache;
 import amateurs.model.AddCommandField;
 import amateurs.model.Game;
@@ -26,7 +23,7 @@ import static amateurs.util.InputToModelMapper.mapInputToGame;
  * Callback data for keyboard buttons follows this format:
  * /add:{UUID}:{new_field_value}
  */
-public class AddCommandExecutor implements CommandExecutor {
+public class AddCommandExecutor extends BaseCommandExecutor implements CommandExecutor {
     public static final String ADD_TEMPLATE = """            
             Where and which court(s) will the game be at?
             
@@ -41,17 +38,12 @@ public class AddCommandExecutor implements CommandExecutor {
             </pre>
             """;
 
-    private final ChatClient chatClient;
-
-    private final Database database;
-
     private final CommandDataCache commandDataCache;
 
     private static final Logger LOG = LogManager.getLogger();
 
     public AddCommandExecutor() {
-        this.chatClient = ChatClient.getInstance();
-        this.database = InMemoryDatabase.getInstance();
+        super();
         this.commandDataCache = InMemoryCommandDataCache.getInstance();
     }
 

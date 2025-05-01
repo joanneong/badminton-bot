@@ -1,6 +1,5 @@
 package amateurs.executor;
 
-import amateurs.ChatClient;
 import amateurs.Command;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
@@ -9,7 +8,7 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import static amateurs.Command.START_COMMAND;
 import static amateurs.util.CommandExecutorUtil.BADMINTON_EMOJI;
 
-public class StartCommandExecutor implements CommandExecutor {
+public class StartCommandExecutor extends BaseCommandExecutor implements CommandExecutor {
     private static final String HELP_TEMPLATE = """
                 Welcome to BadmintonBot! %s
                 
@@ -18,9 +17,8 @@ public class StartCommandExecutor implements CommandExecutor {
 
     private final InlineKeyboardMarkup startMenu;
 
-    private final ChatClient chatClient;
-
     public StartCommandExecutor() {
+        super();
         final InlineKeyboardMarkup.InlineKeyboardMarkupBuilder<?, ?> keyboardMarkupBuilder = InlineKeyboardMarkup.builder();
 
         for (Command command : Command.values()) {
@@ -33,7 +31,6 @@ public class StartCommandExecutor implements CommandExecutor {
             }
         }
 
-        this.chatClient = ChatClient.getInstance();
         this.startMenu = keyboardMarkupBuilder.build();
     }
 
